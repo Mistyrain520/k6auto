@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "uuid": "^9.0.1",
+    "winston": "^3.10.0"
+  }
+}
