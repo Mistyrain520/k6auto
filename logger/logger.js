@@ -1,3 +1,6 @@
+// import winston from '../node_modules/winston/index.d.ts';
+// import { Writable } from 'stream'
+//下面这两行写法在k6中不支持，要写成import形式
 const winston = require('winston')
 // 创建可写流
 const {Writable} = require('stream')
@@ -35,11 +38,29 @@ const logger = winston.createLogger({
   })
 // 传输到通道
 // logger.info('winston transports')
-function createMyLogger(filename){
+
+const fs = require('fs');
+const path = require('path');
+let date = new Date();
+let year = date.getFullYear();
+let month = date.getMonth() + 1;
+let day = date.getDate();
+
+// 格式化日期
+let formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+
+// 检查目录是否存在
+if (!fs.existsSync(formattedDate)) {
+    // 如果不存在，创建目录
+    fs.mkdirSync(formattedDate);
+}
+
+export default function createMyLogger(filename){
+    const myfilename = path.join(formattedDate, filename + '-result.json');
     const mylogger = winston.createLogger({
         transports: [
           new winston.transports.Console(),
-          new winston.transports.File({filename: filename + '-result.json', options: { flags: 'w' }}),
+          new winston.transports.File({filename: myfilename, options: { flags: 'w' }}),
           
         ],
         format: winston.format.combine(
@@ -53,9 +74,20 @@ function createMyLogger(filename){
     return mylogger
 
 }
-const testlog = createMyLogger('2023-10-05')
-testlog.info({
-    message: 'hello world',
-    level: 'info',
-    custom1: 1,
-  });
+// const testlog = createMyLogger('2023-10-05')
+// testlog.info({
+//     message: 'hello world',
+//     level: 'info',
+//     custom1: 1,
+//   });
+//RefinedResponse<ResponseType | undefined
+// export function logInfo(respon ){
+//   const mylogger = createMyLogger(generateUUID) 
+//   if ([200, 201].includes(respon.code)){
+//     mylogger.info({
+//       message: createItem.name,
+//       level: 'info',
+//       custom1: 1,
+//       })
+//   } 
+// }
