@@ -81,8 +81,8 @@ params={
 */
 export function apicreateItemType(params={}){
 	const option = ApiOptions
-	option.name = 'k6自动化事项类型' + ApiOptions.projectuuid
-	option.key = 'k6Itemtype' + ApiOptions.projectuuid
+	option.name = params.name + ApiOptions.projectuuid
+	option.key = params.key + ApiOptions.projectuuid
 	let res = createItemType(option)
 	let Itemlog = logJson
 	Itemlog.name = "createItemType"
@@ -96,14 +96,14 @@ export function apicreateItemType(params={}){
 	}
 	console.log(Itemlog)
 	console.log(res.json(), "@@@@@@###")
-	return dealrespon(res.json(), params)
+	return dealrespon(res.json(), params.params)
 }
 
 export function apicreateItemTypeScheme(params={}){
 	const option = ApiOptions
-	option.name = 'k6自动化事项类型方案' + ApiOptions.projectuuid
-	option.key = params.data.key
-	option.objectId = params.data.objectId
+	option.name = params.name + ApiOptions.projectuuid
+	option.key = params.key + ApiOptions.projectuuid
+	option.objectId = params.objectId
 	let res = createItemTypeScheme(option)
 	let Itemlog = logJson
 	Itemlog.name = "createItemTypeScheme"
@@ -117,5 +117,5 @@ export function apicreateItemTypeScheme(params={}){
 	}
 	console.log(Itemlog)
 	console.log(res.json())
-	return dealrespon(res.json(), params)
+	return dealrespon(res.json(), params.params)
 }

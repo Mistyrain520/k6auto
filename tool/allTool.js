@@ -14,9 +14,10 @@ export function generateMd5(data) {
 export function jsonpath(obj, jsptah){
   return JSONPath(jsptah, obj)
 }
-
+// returnBykey返回 {'key': value}
+// jsonpath 返回 []
+// 
 export function dealrespon(obj, params){
-  console.log(params, "@#")
   if (params.hasOwnProperty("jsonpath")){
     return jsonPath(obj, jsptah)
 	}

@@ -1,22 +1,10 @@
 import http from 'k6/http';
 import { fail } from 'k6';
-import createItem from './apiTest/item.js';
-import {ApiOptions, logJson} from './config/apiOptions.js'
-import {apicreateItemType, apicreateItemTypeScheme} from './apiTest/itemType.js'
 // import { sleep } from 'k6';
+import {setupdata} from './scenarios/setupdata.js'
 var globalVar = {}
 export function setup() {
-  let myitemtype = apicreateItemType({'returnBykey': ['objectId']})
-  let myitemtypescheme = apicreateItemTypeScheme(
-    {
-      'data': {'objectId': myitemtype.objectId, 'key': 'k6Itemtype' + ApiOptions.projectuuid},
-      'returnBykey': ['objectId']
-    })
-  const res = createItem();
-  const status = res.json()
-  data.myitemtype = {'objectId': myitemtype.objectId}
-  data.myitemtypescheme = {'objectId': myitemtypescheme.objectId}
-  return data
+  return setupdata()
 }
 export function teardown(data) {
   console.log(data, "@@@@@@@@@@@@@@");
