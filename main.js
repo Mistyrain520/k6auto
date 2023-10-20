@@ -6,9 +6,9 @@ var globalVar = {}
 export function setup() {
   return setupdata()
 }
-export function teardown(data) {
-  console.log(data, "@@@@@@@@@@@@@@");
-}
+// export function teardown(data) {
+//   console.log(data, "@@@@@@@@@@@@@@");
+// }
 export const options = {
   discardResponseBodies: false,
   scenarios: {
@@ -33,11 +33,11 @@ export const options = {
 };
 
 export function contacts(data) {
-  console.log("##############", data)
+  // console.log("##############", data)
   globalVar.aa = 1;
   if (__ENV.MYVAR != 'contacts') fail();
 }
 export function itemtype(data) {
-  console.log("##############", data)
+  // console.log("##############", data)
   globalVar.bb = 2;
 }

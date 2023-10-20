@@ -1,6 +1,5 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
-import { check } from 'k6';
+import { sleep,check } from 'k6';
 import {ApiOptions, logJson} from '../config/apiOptions.js'
 import { generateUUID, generateMd5, dealrespon } from '../tool/allTool.js';
 const params = {
@@ -66,7 +65,7 @@ function createField(option) {
 			'createField code status': (res) => res.status == 200 || res.status == 201,
 		})
 	  ) {
-		console.log(url, payload, params, res.body, res.json())
+		console.log(url, payload, params1, res.body, res.json())
 	  }
 	return res
 
@@ -78,9 +77,10 @@ function createField(option) {
 
 /*
 params={
-	jsonpath	通过jsonpath方式返回结果 ""
-	key	通过获取key返回 []
-	data 需要传递的值(通常是上个接口返回的值用于下个接口) {}
+	params : 
+		jsonpath	通过jsonpath方式返回结果 ""
+		key	通过获取key返回 []
+	other: 需要传递的值
 }
 空默认返回res.json()
 */
@@ -93,15 +93,16 @@ export function apicreateField(params={}){
 	let Itemlog = logJson
 	Itemlog.name = "createField"
 	Itemlog.uuid = generateUUID()
+	Itemlog.historyId = generateUUID()
 	Itemlog.testCaseId = generateMd5("createField")
 	Itemlog.fullName = "前置操作#createField"
 	if ([200,201].includes(res.status)){
-		Itemlog.status = "pass"
+		Itemlog.status = "passed"
 	}else{
 		Itemlog.status = "broken"
 	}
 	console.log(Itemlog)
-	console.log(res.json(), "@@@@@@###")
+	// console.log(res.json(), "@@@@@@###")
 	return dealrespon(res.json(), params.params)
 }
 
@@ -113,13 +114,14 @@ export function apicreateScreen(params={}){
 	let Itemlog = logJson
 	Itemlog.name = "createScreen"
 	Itemlog.uuid = generateUUID()
+	Itemlog.historyId = generateUUID()
 	Itemlog.testCaseId = generateMd5("createScreen")
 	Itemlog.fullName = "前置操作#createScreen"
 	if ([200,201].includes(res.status)){
-		Itemlog.status = "pass"
+		Itemlog.status = "passed"
 	}else{
 		Itemlog.status = "broken"
 	}
-	// console.log(Itemlog)
+	console.log(Itemlog)
 	return dealrespon(res.json(), params.params)
 }

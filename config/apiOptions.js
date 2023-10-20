@@ -10,7 +10,7 @@ const logJson = {
 	"start": 1696485702081,
 	"stop": 1696485702201,
 	"description": "你可以不写",
-	"statusDetails": '',
+	"statusDetails": {},
 	"uuid": "43c8cdb0-5dfc-450a-a966-e85f33dc3884",
 	"historyId": "63de3e8603f5b694f34a15879bdc13c7",
 	"testCaseId": "d42c884865bc517952f178e1b70879b5",

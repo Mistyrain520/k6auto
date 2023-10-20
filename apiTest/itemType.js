@@ -73,9 +73,10 @@ function createItemTypeScheme(option) {
 
 /*
 params={
-	jsonpath	通过jsonpath方式返回结果 ""
-	key	通过获取key返回 []
-	data 需要传递的值(通常是上个接口返回的值用于下个接口) {}
+	params : 
+		jsonpath	通过jsonpath方式返回结果 ""
+		key	通过获取key返回 []
+	other: 需要传递的值
 }
 空默认返回res.json()
 */
@@ -87,15 +88,15 @@ export function apicreateItemType(params={}){
 	let Itemlog = logJson
 	Itemlog.name = "createItemType"
 	Itemlog.uuid = generateUUID()
+	Itemlog.historyId = generateUUID()
 	Itemlog.testCaseId = generateMd5("createItemType")
 	Itemlog.fullName = "前置操作#createItemType"
 	if ([200,201].includes(res.status)){
-		Itemlog.status = "pass"
+		Itemlog.status = "passed"
 	}else{
 		Itemlog.status = "broken"
 	}
 	console.log(Itemlog)
-	console.log(res.json(), "@@@@@@###")
 	return dealrespon(res.json(), params.params)
 }
 
@@ -108,14 +109,14 @@ export function apicreateItemTypeScheme(params={}){
 	let Itemlog = logJson
 	Itemlog.name = "createItemTypeScheme"
 	Itemlog.uuid = generateUUID()
+	Itemlog.historyId = generateUUID()
 	Itemlog.testCaseId = generateMd5("createItemTypeScheme")
 	Itemlog.fullName = "前置操作#createItemTypeScheme"
 	if ([200,201].includes(res.status)){
-		Itemlog.status = "pass"
+		Itemlog.status = "passed"
 	}else{
 		Itemlog.status = "broken"
 	}
 	console.log(Itemlog)
-	console.log(res.json())
 	return dealrespon(res.json(), params.params)
 }
