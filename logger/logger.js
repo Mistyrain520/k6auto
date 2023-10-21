@@ -85,7 +85,8 @@ async function processLineByLine() {
 
   for await (const line of rl) {
     let index = line.indexOf("]");
-    let parts = line.substring(index + 1).replace(/\s|\n/g, "");
+    //.replace(/\s|\n/g, "")
+    let parts = line.substring(index + 1);
     if (parts.includes('testCaseId')) {
       // console.log(parts)
       let jsonObject = JSON.parse(parts)

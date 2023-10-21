@@ -1,16 +1,23 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 import { check } from 'k6';
+import { request } from '../k6http/k6http.js';
 import {ApiOptions, logJson} from '../config/apiOptions.js'
-import { generateUUID, generateMd5, dealrespon } from '../tool/allTool.js';
+import {dealrespon, consoleLog,httpRequestToCurl } from '../tool/allTool.js';
 /*
 option={
 	key	事项类型的key
 	name	名字
 }
 */
+const params = {
+	headers: {
+		'Content-Type': 'text/plain',
+		'Cookie': ApiOptions.token
+	},};
+
 function createItemType(option) {
-	const url = option.domainName + '/parse/classes/ItemType';
+	const path = '/parse/classes/ItemType';
 	const payload = JSON.stringify({
 		"name": option.name,
 		"key": option.key,
@@ -18,22 +25,22 @@ function createItemType(option) {
 		"_ApplicationId": option.tenant,
 		"_SessionToken": option.token
 	});
-	const params = {
-	headers: {
-		'Content-Type': 'text/plain',
-		'Cookie': option.token
-	},};
-	const res = http.post(url, payload, params);
-	if (
-		!check(res, {
-			'createItemType code status': (res) => res.status == 200 || res.status == 201,
-		})
-	  ) {
-		console.log(url, payload, params, res.body, res.json())
-		// res.debugcurl = '这里组装curl'
-	  }
+	option.requestname = 'createItemType'
+	const res = request(option, 'POST', path, payload, params)
 	return res
 }
+function delByParse(option) {
+	const path = '/parse/classes/' + option.tablename +'/' + option.objectId;
+	const payload = JSON.stringify({
+		"_method": "DELETE",
+		"_ApplicationId": option.tenant,
+		"_SessionToken": option.token
+	});
+	option.requestname = option.tablename
+	const res = request(option, 'POST', path, payload, params)
+	return res
+}
+
 /*
 option={
 	key	事项类型的key
@@ -42,7 +49,7 @@ option={
 }
 */
 function createItemTypeScheme(option) {
-	const url = option.domainName + '/parse/classes/ItemTypeScheme'; 
+	const path = '/parse/classes/ItemTypeScheme'; 
 	const itemtypeList = [{"key":option.key,"children":[{"key":option.key,"objectId":option.objectId}],"expanded":true,"objectId":option.objectId}]
 	const payload = JSON.stringify({
 		"hierarchy": JSON.stringify(itemtypeList),
@@ -50,21 +57,9 @@ function createItemTypeScheme(option) {
 		"_ApplicationId": option.tenant,
 		"_SessionToken": option.token
 	})
-	const params = {
-		headers: {
-			'Content-Type': 'text/plain',
-			'Cookie': option.token
-		},};
-	const res = http.post(url, payload, params);
-	if (
-		!check(res, {
-			'createItemTypeScheme code status': (res) => res.status == 200 || res.status == 201,
-		})
-	  ) {
-		console.log(url, payload, params, res.body, res.json())
-	  }
+	option.requestname = 'createItemTypeScheme'
+	const res = request(option, 'POST', path, payload, params)
 	return res
-
 }
 
 //----------------华丽的分割线--------------
@@ -81,42 +76,42 @@ params={
 空默认返回res.json()
 */
 export function apicreateItemType(params={}){
-	const option = ApiOptions
+	const option = JSON.parse(JSON.stringify(ApiOptions));
 	option.name = params.name + ApiOptions.projectuuid
 	option.key = params.key + ApiOptions.projectuuid
+	option.group = params.group
+	option.casename = params.casename
 	let res = createItemType(option)
-	let Itemlog = logJson
-	Itemlog.name = "createItemType"
-	Itemlog.uuid = generateUUID()
-	Itemlog.historyId = generateUUID()
-	Itemlog.testCaseId = generateMd5("createItemType")
-	Itemlog.fullName = "前置操作#createItemType"
-	if ([200,201].includes(res.status)){
-		Itemlog.status = "passed"
-	}else{
-		Itemlog.status = "broken"
+	try {
+		return dealrespon(res.json(), params.params)
+	  } catch (err) {
+		return dealrespon(res.body, params.params)
 	}
-	console.log(Itemlog)
-	return dealrespon(res.json(), params.params)
 }
-
+export function apidelByParse(params={}){
+	const option = JSON.parse(JSON.stringify(ApiOptions));
+	option.tablename = params.tablename
+	option.objectId = params.objectId
+	option.group = params.group
+	option.casename = params.casename
+	let res = delByParse(option)
+	try {
+		return dealrespon(res.json(), params.params)
+	  } catch (err) {
+		return dealrespon(res.body, params.params)
+	}
+}
 export function apicreateItemTypeScheme(params={}){
-	const option = ApiOptions
+	const option = JSON.parse(JSON.stringify(ApiOptions));
 	option.name = params.name + ApiOptions.projectuuid
 	option.key = params.key + ApiOptions.projectuuid
 	option.objectId = params.objectId
+	option.group = params.group
+	option.casename = params.casename
 	let res = createItemTypeScheme(option)
-	let Itemlog = logJson
-	Itemlog.name = "createItemTypeScheme"
-	Itemlog.uuid = generateUUID()
-	Itemlog.historyId = generateUUID()
-	Itemlog.testCaseId = generateMd5("createItemTypeScheme")
-	Itemlog.fullName = "前置操作#createItemTypeScheme"
-	if ([200,201].includes(res.status)){
-		Itemlog.status = "passed"
-	}else{
-		Itemlog.status = "broken"
+	try {
+		return dealrespon(res.json(), params.params)
+	  } catch (err) {
+		return dealrespon(res.body, params.params)
 	}
-	console.log(Itemlog)
-	return dealrespon(res.json(), params.params)
 }

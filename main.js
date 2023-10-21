@@ -2,13 +2,14 @@ import http from 'k6/http';
 import { fail } from 'k6';
 // import { sleep } from 'k6';
 import {setupdata} from './scenarios/setupdata.js'
+import { teardowndata } from './scenarios/teardowndata.js';
 var globalVar = {}
 export function setup() {
   return setupdata()
 }
-// export function teardown(data) {
-//   console.log(data, "@@@@@@@@@@@@@@");
-// }
+export function teardown(data) {
+  teardowndata(data)
+}
 export const options = {
   discardResponseBodies: false,
   scenarios: {

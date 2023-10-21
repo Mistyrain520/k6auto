@@ -1,10 +1,16 @@
 import http from 'k6/http';
 import { sleep,check } from 'k6';
 import {ApiOptions, logJson} from '../config/apiOptions.js'
-import { generateUUID, generateMd5, dealrespon } from '../tool/allTool.js';
+import { request } from '../k6http/k6http.js';
+import { generateUUID, dealrespon,httpRequestToCurl,consoleLog } from '../tool/allTool.js';
 const params = {
 	headers: {
 		'Content-Type': 'application/json',
+		'Cookie': ApiOptions.token
+	},};
+const params1 = {
+	headers: {
+		'Content-Type': 'text/plain',
 		'Cookie': ApiOptions.token
 	},};
 /*
@@ -14,7 +20,7 @@ option={
 }
 */
 function createScreen(option) {
-	const url = option.domainName + '/parse/classes/Screen';
+	const path = '/parse/classes/Screen';
 	const payload = JSON.stringify({
 			"layout":{
 				"_id": generateUUID(),
@@ -25,17 +31,11 @@ function createScreen(option) {
 			"_ApplicationId":option.tenant,
 			"_SessionToken":option.token
 		});
-	const res = http.post(url, payload, params);
-	if (
-		!check(res, {
-			'createScreen code status': (res) => res.status == 200 || res.status == 201,
-		})
-	  ) {
-		console.log(url, payload, params, res.body, res.json())
-		// res.debugcurl = '这里组装curl'
-	  }
+	option.requestname = 'createScreen'
+	const res = request(option, 'POST', path, payload, params1)
 	return res
 }
+
 /*
 option={
 	key	事项类型的key
@@ -44,7 +44,7 @@ option={
 }
 */
 function createField(option) {
-	const url = option.domainName + '/parse/classes/CustomField'; 
+	const path = '/parse/classes/CustomField'; 
 	const payload = JSON.stringify({
 		"property": {},
 		"name": option.name,
@@ -57,16 +57,8 @@ function createField(option) {
 		"_ApplicationId": option.tenant,
 		"_SessionToken": option.token
 	})
-	let params1 = params;
-	params1['headers']['Content-Type'] = 'text/plain'
-	const res = http.post(url, payload, params1);
-	if (
-		!check(res, {
-			'createField code status': (res) => res.status == 200 || res.status == 201,
-		})
-	  ) {
-		console.log(url, payload, params1, res.body, res.json())
-	  }
+	option.requestname = 'createScreen'
+	const res = request(option, 'POST', path, payload, params1)
 	return res
 
 }
@@ -85,43 +77,23 @@ params={
 空默认返回res.json()
 */
 export function apicreateField(params={}){
-	const option = ApiOptions
+	let option = JSON.parse(JSON.stringify(ApiOptions));
 	option.name = params.name + ApiOptions.projectuuid
 	option.key = params.key + ApiOptions.projectuuid
 	option.objectId = params.objectId
+	option.group = params.group
+	option.casename = params.casename
 	let res = createField(option)
-	let Itemlog = logJson
-	Itemlog.name = "createField"
-	Itemlog.uuid = generateUUID()
-	Itemlog.historyId = generateUUID()
-	Itemlog.testCaseId = generateMd5("createField")
-	Itemlog.fullName = "前置操作#createField"
-	if ([200,201].includes(res.status)){
-		Itemlog.status = "passed"
-	}else{
-		Itemlog.status = "broken"
-	}
-	console.log(Itemlog)
 	// console.log(res.json(), "@@@@@@###")
 	return dealrespon(res.json(), params.params)
 }
 
 export function apicreateScreen(params={}){
-	const option = ApiOptions
+	let option = JSON.parse(JSON.stringify(ApiOptions));
 	option.name = params.name + ApiOptions.projectuuid
+	option.group = params.group
+	option.casename = params.casename
 	option.children = params.children
 	let res = createScreen(option)
-	let Itemlog = logJson
-	Itemlog.name = "createScreen"
-	Itemlog.uuid = generateUUID()
-	Itemlog.historyId = generateUUID()
-	Itemlog.testCaseId = generateMd5("createScreen")
-	Itemlog.fullName = "前置操作#createScreen"
-	if ([200,201].includes(res.status)){
-		Itemlog.status = "passed"
-	}else{
-		Itemlog.status = "broken"
-	}
-	console.log(Itemlog)
 	return dealrespon(res.json(), params.params)
 }
