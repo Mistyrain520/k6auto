@@ -2,67 +2,18 @@ import http from 'k6/http';
 import { sleep,check } from 'k6';
 import {ApiOptions, logJson} from '../config/apiOptions.js'
 import { request } from '../k6http/k6http.js';
-import { generateUUID, dealrespon,httpRequestToCurl,consoleLog } from '../tool/allTool.js';
-const params = {
+import { generateUUID, dealrespon } from '../tool/allTool.js';
+import { apidelByParse, createByParse } from './itemType.js';
+const request_param1 = {
 	headers: {
 		'Content-Type': 'application/json',
 		'Cookie': ApiOptions.token
 	},};
-const params1 = {
+const request_param = {
 	headers: {
 		'Content-Type': 'text/plain',
 		'Cookie': ApiOptions.token
 	},};
-/*
-option={
-	key	事项类型的key
-	name	名字
-}
-*/
-function createScreen(option) {
-	const path = '/parse/classes/Screen';
-	const payload = JSON.stringify({
-			"layout":{
-				"_id": generateUUID(),
-				"component":"_c_root",
-				"children":option.children
-			},
-			"name":option.name,
-			"_ApplicationId":option.tenant,
-			"_SessionToken":option.token
-		});
-	option.requestname = 'createScreen'
-	const res = request(option, 'POST', path, payload, params1)
-	return res
-}
-
-/*
-option={
-	key	事项类型的key
-	objectId	事项类型的id
-	name	名字
-}
-*/
-function createField(option) {
-	const path = '/parse/classes/CustomField'; 
-	const payload = JSON.stringify({
-		"property": {},
-		"name": option.name,
-		"key": option.key,
-		"fieldType": {
-			"__type": "Pointer",
-			"className": "FieldType",
-			"objectId": option.objectId
-		},
-		"_ApplicationId": option.tenant,
-		"_SessionToken": option.token
-	})
-	option.requestname = 'createScreen'
-	const res = request(option, 'POST', path, payload, params1)
-	return res
-
-}
-
 //----------------华丽的分割线--------------
 //---------下面写用例，上面是接口参数封装-----------
 //----------------华丽的分割线--------------
@@ -78,22 +29,117 @@ params={
 */
 export function apicreateField(params={}){
 	let option = JSON.parse(JSON.stringify(ApiOptions));
-	option.name = params.name + ApiOptions.projectuuid
-	option.key = params.key + ApiOptions.projectuuid
-	option.objectId = params.objectId
+	const payload = JSON.stringify({
+		"property": {},
+		"name": params.name + ApiOptions.projectuuid,
+		"key": params.key + ApiOptions.projectuuid,
+		"fieldType": {
+			"__type": "Pointer",
+			"className": "FieldType",
+			"objectId": params.objectId
+		},
+		"_ApplicationId": option.tenant,
+		"_SessionToken": option.token
+	})
+	option.tablename = 'CustomField'
 	option.group = params.group
 	option.casename = params.casename
-	let res = createField(option)
-	// console.log(res.json(), "@@@@@@###")
-	return dealrespon(res.json(), params.params)
-}
+	option.payload = payload
+	let res = createByParse(option)
+	try {
+		return dealrespon(res.json(), params.params)
+	  } catch (err) {
+		return dealrespon(res.body, params.params)
+	}}
 
 export function apicreateScreen(params={}){
 	let option = JSON.parse(JSON.stringify(ApiOptions));
-	option.name = params.name + ApiOptions.projectuuid
+	const payload = JSON.stringify({
+		"layout":{
+			"_id": generateUUID(),
+			"component":"_c_root",
+			"children":params.children
+		},
+		"name":params.name + ApiOptions.projectuuid,
+		"_ApplicationId":option.tenant,
+		"_SessionToken":option.token
+	});
+	option.tablename = 'Screen'
 	option.group = params.group
 	option.casename = params.casename
-	option.children = params.children
-	let res = createScreen(option)
-	return dealrespon(res.json(), params.params)
-}
+	option.payload = payload
+	let res = createByParse(option)
+	try {
+		return dealrespon(res.json(), params.params)
+	  } catch (err) {
+		return dealrespon(res.body, params.params)
+	}}
+
+export function apicreateScreen(params={}){
+	let option = JSON.parse(JSON.stringify(ApiOptions));
+	const payload = JSON.stringify({
+		"layout":{
+			"_id": generateUUID(),
+			"component":"_c_root",
+			"children":params.children
+		},
+		"name":params.name + ApiOptions.projectuuid,
+		"_ApplicationId":option.tenant,
+		"_SessionToken":option.token
+	});
+	option.tablename = 'Screen'
+	option.group = params.group
+	option.casename = params.casename
+	option.payload = payload
+	let res = createByParse(option)
+	try {
+		return dealrespon(res.json(), params.params)
+		} catch (err) {
+		return dealrespon(res.body, params.params)
+	}}
+
+export function apicreateScreenScheme(params={}){
+	let option = JSON.parse(JSON.stringify(ApiOptions));
+	const payload = JSON.stringify({
+		"name": params.name + ApiOptions.projectuuid,
+		"defaultScreen": {
+			"__type": "Pointer",
+			"className": "Screen",
+			"objectId": params.objectId
+		},
+		"_ApplicationId": option.tenant,
+		"_SessionToken": option.token
+	});
+	option.tablename = 'ScreenScheme'
+	option.group = params.group
+	option.casename = params.casename
+	option.payload = payload
+	let res = createByParse(option)
+	try {
+		return dealrespon(res.json(), params.params)
+		} catch (err) {
+		return dealrespon(res.body, params.params)
+	}}
+
+	export function apicreateItemTypeScreenScheme(params={}){
+		let option = JSON.parse(JSON.stringify(ApiOptions));
+		const payload = JSON.stringify({
+			"defaultScreenScheme": {
+				"__type": "Pointer",
+				"className": "ScreenScheme",
+				"objectId": option.objectId
+			},
+			"name": option.name + ApiOptions.projectuuid,
+			"_ApplicationId": "osc",
+			"_SessionToken": "r:b6e33133713a9b40cb6444a79326a1dd"
+		});
+		option.tablename = 'ItemTypeScreenScheme'
+		option.group = params.group
+		option.casename = params.casename
+		option.payload = payload
+		let res = createByParse(option)
+		try {
+			return dealrespon(res.json(), params.params)
+			} catch (err) {
+			return dealrespon(res.body, params.params)
+		}}

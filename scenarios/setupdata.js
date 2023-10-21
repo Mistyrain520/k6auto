@@ -1,6 +1,6 @@
 import {ApiOptions} from '../config/apiOptions.js'
 import {apicreateItemType, apicreateItemTypeScheme} from '../apiTest/itemType.js'
-import {apicreateField, apicreateScreen} from '../apiTest/screen.js'
+import {apicreateField, apicreateScreen, apicreateScreenScheme} from '../apiTest/screen.js'
 import { getFieldtype_Date } from '../tool/pgsql.js';
 //初始化数据场景
 
@@ -88,9 +88,21 @@ export function setupdata(){
             'casename': '创建界面',
         }
      )
+     let myscreenScheme = apicreateScreenScheme(
+        {
+            'params': {
+                'returnBykey': ['objectId']
+            },
+            'name': 'k6自动化界面方案',
+            'objectId': myscreen.objectId,
+            'group': '初始化数据.字段和界面',
+            'casename': '创建界面方案',
+        }
+     )
      data.myField = {'objectId': myField.objectId}
      data.myscreen = {'objectId': myscreen.objectId}
-
+     data.myscreenScheme = {'objectId': myscreenScheme.objectId}
+     
     return data
 }
   

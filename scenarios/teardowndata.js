@@ -18,4 +18,16 @@ export function teardowndata(data){
         'group': '后置处理.事项类型',
         'casename': '删除事项类型'
     })
+    apidelByParse({
+        'tablename': 'Screen',
+        'objectId': data.myscreen.objectId,
+        'group': '后置处理.字段和界面',
+        'casename': '删除界面'
+    })
+    apidelByParse({
+        'tablename': 'CustomField',
+        'objectId': data.myField.objectId,
+        'group': '后置处理.字段和界面',
+        'casename': '删除字段'
+    })
 }

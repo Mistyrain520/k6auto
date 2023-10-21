@@ -10,26 +10,12 @@ option={
 	name	名字
 }
 */
-const params = {
+const request_params = {
 	headers: {
 		'Content-Type': 'text/plain',
 		'Cookie': ApiOptions.token
 	},};
-
-function createItemType(option) {
-	const path = '/parse/classes/ItemType';
-	const payload = JSON.stringify({
-		"name": option.name,
-		"key": option.key,
-		"icon": "/icons/Issue_Plan.svg",
-		"_ApplicationId": option.tenant,
-		"_SessionToken": option.token
-	});
-	option.requestname = 'createItemType'
-	const res = request(option, 'POST', path, payload, params)
-	return res
-}
-function delByParse(option) {
+export function delByParse(option) {
 	const path = '/parse/classes/' + option.tablename +'/' + option.objectId;
 	const payload = JSON.stringify({
 		"_method": "DELETE",
@@ -37,31 +23,15 @@ function delByParse(option) {
 		"_SessionToken": option.token
 	});
 	option.requestname = option.tablename
-	const res = request(option, 'POST', path, payload, params)
+	const res = request(option, 'POST', path, payload, request_params)
 	return res
 }
-
-/*
-option={
-	key	事项类型的key
-	objectId	事项类型的id
-	name	名字
-}
-*/
-function createItemTypeScheme(option) {
-	const path = '/parse/classes/ItemTypeScheme'; 
-	const itemtypeList = [{"key":option.key,"children":[{"key":option.key,"objectId":option.objectId}],"expanded":true,"objectId":option.objectId}]
-	const payload = JSON.stringify({
-		"hierarchy": JSON.stringify(itemtypeList),
-		"name": option.name,
-		"_ApplicationId": option.tenant,
-		"_SessionToken": option.token
-	})
-	option.requestname = 'createItemTypeScheme'
-	const res = request(option, 'POST', path, payload, params)
+export function createByParse(option) {
+	const path = '/parse/classes/' + option.tablename;
+	option.requestname = option.tablename
+	const res = request(option, 'POST', path, option.payload, request_params)
 	return res
 }
-
 //----------------华丽的分割线--------------
 //---------下面写用例，上面是接口参数封装-----------
 //----------------华丽的分割线--------------
@@ -77,11 +47,18 @@ params={
 */
 export function apicreateItemType(params={}){
 	const option = JSON.parse(JSON.stringify(ApiOptions));
-	option.name = params.name + ApiOptions.projectuuid
-	option.key = params.key + ApiOptions.projectuuid
+	const payload = JSON.stringify({
+		"name": option.name + ApiOptions.projectuuid,
+		"key": option.key + ApiOptions.projectuuid,
+		"icon": "/icons/Issue_Plan.svg",
+		"_ApplicationId": option.tenant,
+		"_SessionToken": option.token
+	});
+	option.tablename = 'ItemType'
+	option.payload = payload
 	option.group = params.group
 	option.casename = params.casename
-	let res = createItemType(option)
+	let res = createByParse(option)
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {
@@ -103,12 +80,21 @@ export function apidelByParse(params={}){
 }
 export function apicreateItemTypeScheme(params={}){
 	const option = JSON.parse(JSON.stringify(ApiOptions));
-	option.name = params.name + ApiOptions.projectuuid
-	option.key = params.key + ApiOptions.projectuuid
-	option.objectId = params.objectId
+	//组装事项类型方案的请求载荷payload
+	let key = params.key + ApiOptions.projectuuid
+	let objectId = params.objectId
+	const itemtypeList = [{"key":key,"children":[{"key":key,"objectId":objectId}],"expanded":true,"objectId":objectId}]
+	const payload = JSON.stringify({
+		"hierarchy": JSON.stringify(itemtypeList),
+		"name": params.name + ApiOptions.projectuuid,
+		"_ApplicationId": option.tenant,
+		"_SessionToken": option.token
+	})
+	option.tablename = 'ItemTypeScheme'
 	option.group = params.group
 	option.casename = params.casename
-	let res = createItemTypeScheme(option)
+	option.payload = payload
+	let res = createByParse(option)
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {
