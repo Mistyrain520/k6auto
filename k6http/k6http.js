@@ -9,7 +9,7 @@ export function request(option, method, path, payload, params){
 	check(res, {
 		[path]: (res) => res.status == 200 || res.status == 201,
 	})
-	if (!option.isLog){
+	if (!option.isNotLog){
 	consoleLog({
 		'group': option.group,
 		'casename': option.casename || option.requestname,

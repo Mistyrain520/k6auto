@@ -1,10 +1,5 @@
-import http from 'k6/http';
-import { fail } from 'k6';
-import createItem from '../apiTest/item.js';
 import {ApiOptions} from '../config/apiOptions.js'
 import {apidelByParse} from '../apiTest/itemType.js'
-import {apicreateField, apicreateScreen} from '../apiTest/screen.js'
-import { getFieldtype_Date } from '../tool/pgsql.js';
 export function teardowndata(data){
     apidelByParse({
         'tablename': 'ItemTypeScheme',
@@ -19,6 +14,18 @@ export function teardowndata(data){
         'casename': '删除事项类型'
     })
     apidelByParse({
+        'tablename': 'ItemTypeScreenScheme',
+        'objectId': data.myItemTypeScreenScheme.objectId,
+        'group': '后置处理.字段和界面',
+        'casename': '删除类型界面方案'
+    })
+    apidelByParse({
+        'tablename': 'ScreenScheme',
+        'objectId': data.myscreenScheme.objectId,
+        'group': '后置处理.字段和界面',
+        'casename': '删除界面方案'
+    })
+    apidelByParse({
         'tablename': 'Screen',
         'objectId': data.myscreen.objectId,
         'group': '后置处理.字段和界面',
@@ -29,5 +36,23 @@ export function teardowndata(data){
         'objectId': data.myField.objectId,
         'group': '后置处理.字段和界面',
         'casename': '删除字段'
+    })
+    apidelByParse({
+        'tablename': 'Workflow',
+        'objectId': data.myFlow.objectId,
+        'group': '后置处理.工作流',
+        'casename': '删除工作流'
+    })
+    apidelByParse({
+        'tablename': 'Status',
+        'objectId': data.myStatus1.objectId,
+        'group': '后置处理.工作流',
+        'casename': '删除状态'
+    })
+    apidelByParse({
+        'tablename': 'Status',
+        'objectId': data.myStatus2.objectId,
+        'group': '后置处理.工作流',
+        'casename': '删除状态'
     })
 }

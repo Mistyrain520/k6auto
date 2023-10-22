@@ -1,44 +1,45 @@
 import http from 'k6/http';
 import { fail } from 'k6';
 // import { sleep } from 'k6';
+import sql from 'k6/x/sql';
 import {setupdata} from './scenarios/setupdata.js'
 import { teardowndata } from './scenarios/teardowndata.js';
-var globalVar = {}
+import { createItem } from './scenarios/itemScenarios.js';
+import { getitemGroup } from './tool/pgsql.js';
 export function setup() {
-  return setupdata()
+  const db1 = sql.open('postgres', 'postgres://gitee_team:fa29136a28579f30efe21829aef27bf89730070dbeb331729354d7995ac84a7b@127.0.0.1:5432/osc?sslmode=disable');
+  const data = setupdata()
+  data.myitemGroup = {'objectId':getitemGroup(db1, data.myworkspace.objectId)}
+  return data
 }
 export function teardown(data) {
-  teardowndata(data)
+  // teardowndata(data)
 }
 export const options = {
+  setupTimeout: '30m',
+  /*
+  执行性能测试，设置为true，丢弃所有响应报文，默认只校验状态码。这里非常不建议设置true。
+  因为是所有经过k6 http的请求报文都会丢失，这会影响到setup的数据获取
+  因为性能测试通常是单一接口分开进行的，否则单个接口性能容易收到其他接口影响
+  如果一定要从其他接口获取数据来作为性能测试接口的数据，建议在setup中获取
+  当然，如果要压场景化的性能则例外。请根据实际安排。
+  */
   discardResponseBodies: false,
   scenarios: {
+    //这个场景是10个VU每个50迭代，也就是10并发，每个并发下执行50次function中的行为
     contacts: {
         executor: 'per-vu-iterations',
-        vus: 1,
-        iterations: 1,
-        maxDuration: '30s',
-        exec: 'contacts',
-        tags: { my_custom_tag: 'contacts' },
+        vus: 5,
+        iterations: 20,
+        maxDuration: '5m',
+        exec: 'scenarios_item',
+        tags: { my_custom_tag: '事项相关场景' },
         env: { MYVAR: 'contacts' },
-      },
-      itemtype: {
-        executor: 'per-vu-iterations',
-        vus: 1,
-        iterations: 1,
-        maxDuration: '30s',
-        exec: 'itemtype',
-        tags: { my_custom_tag: 'contacts' }
       }
   },
 };
 
-export function contacts(data) {
-  // console.log("##############", data)
-  globalVar.aa = 1;
-  if (__ENV.MYVAR != 'contacts') fail();
-}
-export function itemtype(data) {
-  // console.log("##############", data)
-  globalVar.bb = 2;
+export function scenarios_item(data) {
+  data.isNotLog = false
+  createItem(data)
 }

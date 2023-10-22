@@ -11,6 +11,7 @@ option={
 }
 */
 const request_params = {
+	timeout: '30s',
 	headers: {
 		'Content-Type': 'text/plain',
 		'Cookie': ApiOptions.token
@@ -48,8 +49,8 @@ params={
 export function apicreateItemType(params={}){
 	const option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
-		"name": option.name + ApiOptions.projectuuid,
-		"key": option.key + ApiOptions.projectuuid,
+		"name": params.name + ApiOptions.projectuuid,
+		"key": params.key + ApiOptions.projectuuid,
 		"icon": "/icons/Issue_Plan.svg",
 		"_ApplicationId": option.tenant,
 		"_SessionToken": option.token

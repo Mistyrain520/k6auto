@@ -19,7 +19,7 @@ export function jsonpath(obj, jsptah){
 // jsonpath 返回 []
 // 
 export function dealrespon(obj, params){
-  if (params){
+  if (params && obj){
     if (params.hasOwnProperty("jsonpath")){
       return jsonPath(obj, jsptah)
     }
@@ -36,7 +36,7 @@ export function dealrespon(obj, params){
   return obj
 }
 
-
+//TUDO:用go的zap重新写个扩展，支持高性能写入,这样就不需要consoleLog了
 export function consoleLog(params={}){
   //用深拷贝，创建独立副本
   let Itemlog = JSON.parse(JSON.stringify(logJson));
