@@ -26,7 +26,7 @@ export const options = {
   */
   discardResponseBodies: false,
   scenarios: {
-    //这个场景是10个VU每个50迭代，也就是10并发，每个并发下执行50次function中的行为
+    //这个场景是5个VU每个50迭代，也就是5并发，每个并发下执行20次function中的行为
     contacts: {
         executor: 'per-vu-iterations',
         vus: 5,
