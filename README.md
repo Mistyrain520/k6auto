@@ -48,11 +48,12 @@ scenarios: {
 
 
 ## TUDO
-- [ ] k6 丰富实战项目的api自动化测试，api性能自动化
+- [x] k6 ~~丰富实战项目的api自动化测试，api性能自动化(已经做好样例，后续等扩展完善再考虑增加)~~
 - [ ] k6 browser 实战
-- [ ] go zap扩展
+- [ ] k6 chaijs接入 zap-logger接入
+- [x] go zap扩展开发
 - [ ] k6 redis demo
-- [ ] k6 pgql demo
+- [x] k6 pgql 接入
 - [ ] k6 websocket demo
 - [ ] k6 kafka demo
 - [ ] k6 k8s demo
