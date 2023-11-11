@@ -42,7 +42,7 @@ export function apiWorkspace(params={}){
 	option.payload = payload
 	option.group = params.group
 	option.casename = params.casename
-	let res = request(option, 'POST', '/parse/classes/Workspace', payload, request_params1)
+	let res = request(option, 'POST', '/parse/classes/Workspace', payload, request_params1).res
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {

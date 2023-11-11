@@ -9,7 +9,7 @@ import { getitemGroup } from './tool/pgsql.js';
 export function setup() {
   return setupdata()
 }
-export function teardown(data) {
+export function teardown() {
   // teardowndata(data)
 }
 export const options = {
@@ -36,13 +36,22 @@ export const options = {
   },
 };
 
-export function scenarios_item(data) {
-  const db1 = sql.open('postgres', 'postgres://gitee_team:fa29136a28579f30efe21829aef27bf89730070dbeb331729354d7995ac84a7b@127.0.0.1:5432/osc?sslmode=disable');
-  data.myitemGroup = {'objectId':getitemGroup(db1, data.myworkspace.objectId)}
-  createItem(data)
+export function scenarios_item() {
+  
+  // const db1 = sql.open('postgres', 'postgres://gitee_team:fa29136a28579f30efe21829aef27bf89730070dbeb331729354d7995ac84a7b@127.0.0.1:5432/osc?sslmode=disable');
+  // data.myitemGroup = {'objectId':getitemGroup(db1, data.myworkspace.objectId)}
+  let data = {}
+  // data.myworkspace = {};
+  // data.myitemtype = {};
+  // data.myitemGroup = {};
+  // data.myworkspace.objectId = 'OfqrtG8PqV';
+  // data.myitemtype.objectId = 'Lg9J3eCO1b';
+  // data.myitemGroup.objectId = 'AWA1joeVbn';
+  // data.name = '啦啦啦啦'
+  // createItem(data)
 }
 
 //上面option有定义，下面的function才会执行
-export function itemtype(data) {
-  console.log("##############", data)
+export function itemtype() {
+  console.log("##############")
 }

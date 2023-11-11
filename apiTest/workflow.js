@@ -131,7 +131,7 @@ export function apicreatFlow(params={}){
 	option.payload = payload
 	option.group = params.group
 	option.casename = params.casename
-	let res = request(option, 'POST', '/parse/api/workflows', payload, request_params2)
+	let res = request(option, 'POST', '/parse/api/workflows', payload, request_params2).res
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {
@@ -149,7 +149,7 @@ export function apiWorkflowScheme(params={}){
 	option.payload = payload
 	option.group = params.group
 	option.casename = params.casename
-	let res = request(option, 'POST', '/parse/classes/WorkflowScheme', payload, request_params1)
+	let res = request(option, 'POST', '/parse/classes/WorkflowScheme', payload, request_params1).res
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {

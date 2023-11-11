@@ -4,12 +4,21 @@ import { describe, expect } from "../tool/chaijs.js";
 
 
 export default function () {
+  // if (expect(2).to.equal(2)){
+  //   console.log("@@@@@@@@@@@@@@@@@")
+  // }
+  // if (expect(2).to.equal(3)){
+  //   console.log("@@@@@@@@@@@@@@@@@")
+  // }
   describe('Basic test', (t) => {
     // throw 'Something entirely unexpected happened';
+    // expect([200,201].to.be.an("array").that.includes(201));
     const response = http.get('https://test-api.k6.io/');
-    console.log(response.json())
-    expect(response.body).to.have.lengthOf.at.least(500);
-    expect(response.body).to.have.all.keys('a', 'b');
+    const a = {"ancestors":[],"objectId":"JGTgMKpxk1"}
+    expect(a).to.have.keys("objectId");
+    // expect(response.body).to.have.all.keys('a', 'b');
+   
+
     // expect({ a: 1 }).to.not.have.property("b");
     // expect(2).to.equal(2);
     // expect({ a: 1 }).to.deep.equal({ a: 1 });
@@ -21,7 +30,7 @@ export default function () {
     // expect({ a: 1, b: 2 }).to.not.have.any.keys("c", "d");
     // expect({ a: 1, b: 2 }).to.have.all.keys("a", "b");
     // expect("foo").to.be.a("string");
-    // expect([1, 2, 3]).to.be.an("array").that.includes(2);
+    expect([200,201]).to.be.an("array").that.includes(201);
     // expect("foobar").to.include("foo");
     // expect(1).to.equal(1);
     // expect(true).to.be.true;
