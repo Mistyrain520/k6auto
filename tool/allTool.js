@@ -50,6 +50,7 @@ export function consoleLog(params={}){
   // // 用深拷贝，创建独立副本
   // let Itemlog = JSON.parse(JSON.stringify(logJson));
   let statusDetails = zaplogger.zapObject('statusDetails', 'message', params.message,'trace', params.trace)
+  
   let mystatus = ''
   if ([200,201].includes(params.resStatus)){
     mystatus = "passed"
@@ -80,7 +81,7 @@ export function consoleLog(params={}){
     "description", params.description,
     statusDetails,
     "uuid", generateUUID(),
-    "historyId", '',
+    "historyId", generateUUID(),
     "testCaseId", generateMd5(params.casename),
     "fullName", params.group + "#" + params.casename,
     "labels", labels,

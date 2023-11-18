@@ -15,7 +15,6 @@ params={
 空默认返回res.json()
 */
 export function apicreateField(params={}){
-	let option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
 		"property": {},
 		"name": params.name + ApiOptions.projectuuid,
@@ -28,13 +27,11 @@ export function apicreateField(params={}){
 		"_ApplicationId": option.tenant,
 		"_SessionToken": option.token
 	})
-	option.tablename = 'CustomField'
-	option.group = params.group
-	option.casename = params.casename
-	option.payload = payload
+	params.tablename = 'CustomField'
+	params.payload = payload
 	// option.params = request_param 
 	//封装的parse已经有params了，不需要单独传了
-	let res = createByParse(option)
+	let res = createByParse(params)
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {
@@ -43,7 +40,6 @@ export function apicreateField(params={}){
 }
 
 export function apicreateScreen(params={}){
-	let option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
 		"layout":{
 			"_id": generateUUID(),
@@ -59,18 +55,15 @@ export function apicreateScreen(params={}){
 		"_ApplicationId":option.tenant,
 		"_SessionToken":option.token
 	});
-	option.tablename = 'Screen'
-	option.group = params.group
-	option.casename = params.casename
-	option.payload = payload
-	let res = createByParse(option)
+	params.tablename = 'Screen'
+	params.payload = payload
+	let res = createByParse(params)
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {
 		return dealrespon(res.body, params.params)
 	}}
 export function apicreateScreenScheme(params={}){
-	let option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
 		"name": params.name + ApiOptions.projectuuid,
 		"defaultScreen": {
@@ -81,11 +74,9 @@ export function apicreateScreenScheme(params={}){
 		"_ApplicationId": option.tenant,
 		"_SessionToken": option.token
 	});
-	option.tablename = 'ScreenScheme'
-	option.group = params.group
-	option.casename = params.casename
-	option.payload = payload
-	let res = createByParse(option)
+	params.tablename = 'ScreenScheme'
+	params.payload = payload
+	let res = createByParse(params)
 	try {
 		return dealrespon(res.json(), params.params)
 		} catch (err) {
@@ -93,7 +84,6 @@ export function apicreateScreenScheme(params={}){
 	}}
 
 export function apicreateItemTypeScreenScheme(params={}){
-	let option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
 		"defaultScreenScheme": {
 			"__type": "Pointer",
@@ -104,11 +94,9 @@ export function apicreateItemTypeScreenScheme(params={}){
 		"_ApplicationId": option.tenant,
 		"_SessionToken": option.token
 	});
-	option.tablename = 'ItemTypeScreenScheme'
-	option.group = params.group
-	option.casename = params.casename
-	option.payload = payload
-	let res = createByParse(option)
+	params.tablename = 'ItemTypeScreenScheme'
+	params.payload = payload
+	let res = createByParse(params)
 	try {
 		return dealrespon(res.json(), params.params)
 		} catch (err) {
