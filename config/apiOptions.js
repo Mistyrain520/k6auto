@@ -1,6 +1,6 @@
 const ApiOptions = {
     domainName: 'http://localhost:8088',
-    projectuuid: 'crthaha7',
+    projectuuid: 'crthaha2',
     token: 'a:5342414fbd5b66363156fb08',
     tenant: 'osc',
 }
@@ -34,6 +34,29 @@ const logJson = {
 	}, {
 		"name": "package",
 		"value": "main"
-	}]
+	}],
+	"steps": [
+		{
+		  "name": "Step 1",
+		  "status": "passed",
+		  "start": 1682358426014,
+		  "stop": 1682358426014,
+		  "parameters": []
+		},
+		{
+		  "name": "Step 2",
+		  "status": "passed",
+		  "start": 1682358426014,
+		  "stop": 1682358426014
+		}
+	  ]
 }
 export { ApiOptions, logJson}
+
+// "parameters": [ {
+// 	"name" : "arg1",
+// 	"value" : "1"
+//   }, {
+// 	"name" : "arg2",
+// 	"value" : "'abc'"
+//   } ]

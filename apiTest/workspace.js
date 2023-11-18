@@ -8,7 +8,6 @@ const request_params1 = {
 		'Cookie': ApiOptions.token
 	},};
 export function apiWorkspace(params={}){
-	let option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
         "name": params.name + ApiOptions.projectuuid,
         "key": params.key + ApiOptions.projectuuid,
@@ -39,10 +38,8 @@ export function apiWorkspace(params={}){
         "_ApplicationId": option.tenant,
         "_SessionToken": option.token
     })
-	option.payload = payload
-	option.group = params.group
-	option.casename = params.casename
-	let res = request(option, 'POST', '/parse/classes/Workspace', payload, request_params1)
+	params.payload = payload
+	let res = request(params, 'POST', '/parse/classes/Workspace', payload, request_params1).res
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {

@@ -1,7 +1,13 @@
 {
   "dependencies": {
+    "axios": "^1.6.1",
+    "chai": "^4.3.10",
+    "cheerio": "^1.0.0-rc.12",
     "jsonpath-plus": "^7.2.0",
+    "svg-captcha": "^1.4.0",
     "uuid": "^3.4.0",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "xml2js": "^0.6.2",
+    "xmldom": "^0.6.0"
   }
 }

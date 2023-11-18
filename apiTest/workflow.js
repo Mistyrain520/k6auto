@@ -23,7 +23,6 @@ const request_params2 = {
 		'X-Parse-Session-Token': ApiOptions.token,
 	},};
 export function apicreateStatus(params={}){
-	let option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
         "name": params.name + ApiOptions.projectuuid,
         "type": params.type,
@@ -33,11 +32,9 @@ export function apicreateStatus(params={}){
 		"_ApplicationId": option.tenant,
 		"_SessionToken": option.token
     })
-	option.tablename = 'Status'
-	option.group = params.group
-	option.casename = params.casename
-	option.payload = payload
-	let res = createByParse(option)
+	params.tablename = 'Status'
+	params.payload = payload
+	let res = createByParse(params)
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {
@@ -45,7 +42,6 @@ export function apicreateStatus(params={}){
 	}
 }
 export function apicreatFlow(params={}){
-	let option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
 		"name": params.name + ApiOptions.projectuuid,
 		"nodes": [{
@@ -128,10 +124,8 @@ export function apicreatFlow(params={}){
 		},
 		"releaseStatus": true
 	})
-	option.payload = payload
-	option.group = params.group
-	option.casename = params.casename
-	let res = request(option, 'POST', '/parse/api/workflows', payload, request_params2)
+	params.payload = payload
+	let res = request(params, 'POST', '/parse/api/workflows', payload, request_params2).res
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {
@@ -140,16 +134,13 @@ export function apicreatFlow(params={}){
 }
 
 export function apiWorkflowScheme(params={}){
-	let option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
 		"name": params.name + ApiOptions.projectuuid,
 		"_ApplicationId": option.tenant,
 		"_SessionToken": option.token
 	})
-	option.payload = payload
-	option.group = params.group
-	option.casename = params.casename
-	let res = request(option, 'POST', '/parse/classes/WorkflowScheme', payload, request_params1)
+	params.payload = payload
+	let res = request(params, 'POST', '/parse/classes/WorkflowScheme', payload, request_params1).res
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {

@@ -1,4 +1,5 @@
 import { apicreateItem } from "../apiTest/item.js";
+import { ApiOptions } from "../config/apiOptions.js";
 
 
 export function createItem(data){
@@ -6,7 +7,7 @@ export function createItem(data){
         'params': {
             'returnBykey': ['objectId']
         },
-        'name': '创建事项名字',
+        'name': data.name + ApiOptions.projectuuid,
         'workspace': data.myworkspace.objectId,
         'itemType': data.myitemtype.objectId,
         'itemGroup': data.myitemGroup.objectId,

@@ -2,7 +2,9 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 import { request } from '../k6http/k6http.js';
 import {ApiOptions} from '../config/apiOptions.js'
-import {dealrespon } from '../tool/allTool.js';
+import {dealrespon, httpRequestToCurl, checkExpectation, consoleLog } from '../tool/allTool.js';
+import { expect } from "../tool/chaijs.js";
+// import zaplogger from 'k6/x/zaplogger';
 
 const request_params = {
 	headers: {
@@ -48,9 +50,24 @@ export function apicreateItem(params={}){
 	//来控制是否打印日志，也就是输出报告，可以空，默认打印；true就不打印日志
 	option.isNotLog = params.isNotLog
 	let res = request(option, 'POST', path, payload, request_params)
+	if (!option.isNotLog){
+		res.report.steps = [
+			{"name": "返回状态200或者201",
+			"status": 	checkExpectation(() => expect([200,201]).to.be.an("array").that.includes(res.res.status)).pass || 'broken',
+			"parameters": [{'name': '实际结果', 'value': checkExpectation(() => expect([200,201]).to.be.an("array").that.includes(res.res.status)).fail || res.res.status}]
+			},
+			{
+			"name": "返回包含objectId",
+			"status": 	checkExpectation(() => expect(res.res.json()).to.have.property("objectId")).pass || 'broken',
+			"parameters": [{'name': '实际结果', 'value': checkExpectation(() => expect(res.res.json()).to.have.property("objectId")).fail || res.res.json().objectId}]
+			}
+		]
+		consoleLog(res.report)
+	}
+	
 	try {
-		return dealrespon(res.json(), params.params)
+		return dealrespon(res.res.json(), params.params)
 	  } catch (err) {
-		return dealrespon(res.body, params.params)
+		return dealrespon(res.res.body, params.params)
 	}
 }

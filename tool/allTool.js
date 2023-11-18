@@ -2,6 +2,12 @@ import uuid from './uuid.js'
 import crypto from 'k6/crypto';
 import {JSONPath} from '../node_modules/jsonpath-plus/dist/index-browser-esm.js';
 import {logJson} from '../config/apiOptions.js'
+import zaplogger from 'k6/x/zaplogger';
+import { expect } from "../tool/chaijs.js";
+let date = new Date();
+let year = date.getFullYear();
+let month = date.getMonth() + 1;
+let day = date.getDate();
 export function generateUUID(){
     return uuid.v4()
 }
@@ -38,38 +44,50 @@ export function dealrespon(obj, params){
 
 //TUDO:用go的zap重新写个扩展，支持高性能写入,这样就不需要consoleLog了
 export function consoleLog(params={}){
-  //用深拷贝，创建独立副本
-  let Itemlog = JSON.parse(JSON.stringify(logJson));
-  Itemlog.name = params.casename
-  Itemlog.uuid = generateUUID()
-  Itemlog.historyId = generateUUID()
-  Itemlog.description = params.description
-  Itemlog.testCaseId = generateMd5(params.casename)
-  Itemlog.fullName = params.group + "#" + params.casename
-  Itemlog.start = params.start
-  Itemlog.stop = params.stop
-  Itemlog.statusDetails = params.statusDetails
+  if(!params){return}
+  let mypath = generateFile()
+	let mylogger = zaplogger.initLogger('./' + mypath.formattedDate + '/' + mypath.myfilename)
+  // // 用深拷贝，创建独立副本
+  // let Itemlog = JSON.parse(JSON.stringify(logJson));
+  let statusDetails = zaplogger.zapObject('statusDetails', 'message', params.message,'trace', params.trace)
+  
+  let mystatus = ''
   if ([200,201].includes(params.resStatus)){
-    Itemlog.status = "passed"
+    mystatus = "passed"
   }else{
-    Itemlog.status = "broken"
+    mystatus = "broken"
   }
-  var label = ''
+  let label = ''
+  let labels = JSON.parse(JSON.stringify(logJson.labels))
   if (params.group.includes('.')){
     var line = params.group.split('.')
     label = line[0]
-    Itemlog.labels.push({"name": "subSuite", "value": line[1]})
+    labels.push({"name": "subSuite", "value": line[1]})
   }else{
     label = params.group
   }
-  Itemlog.labels = Itemlog.labels.map(item => {
+  labels = labels.map(item => {
     if (item.value === 'main') {
       item.value = label
       return item;
     }
     return item;
 })
-  console.log(Itemlog)
+  mylogger.infow(params.casename,
+    "name", params.casename,
+    "status", mystatus,
+    "start", params.start,
+    "stop", params.stop,
+    "description", params.description,
+    statusDetails,
+    "uuid", generateUUID(),
+    "historyId", generateUUID(),
+    "testCaseId", generateMd5(params.casename),
+    "fullName", params.group + "#" + params.casename,
+    "labels", labels,
+    "steps", params.steps || []
+    )
+  mylogger.sync()
 }
 //再写个方法自动转为curl方便调试
 export function httpRequestToCurl(method, url, headers, data) {
@@ -84,4 +102,25 @@ export function httpRequestToCurl(method, url, headers, data) {
   }
 
   return `curl -X ${method} ${headerString}${dataString}${url}`;
+}
+
+export function generateFile(){
+  // 格式化日期
+  let formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+
+  // 检查目录是否存在
+  // if (!fs.existsSync(formattedDate)) {
+  //     fs.mkdirSync(formattedDate);
+  // }
+  const myfilename = generateUUID() + '-result.json';
+  return {'formattedDate': formattedDate, 'myfilename': myfilename}
+}
+
+export function checkExpectation(expectationFunc) {
+  try {
+      expectationFunc();
+      return {'pass': 'passed'};
+  } catch (error) {
+      return {'fail': error.message};
+  }
 }

@@ -2,8 +2,9 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 import { check } from 'k6';
 import { request } from '../k6http/k6http.js';
-import {ApiOptions, logJson} from '../config/apiOptions.js'
-import {dealrespon, consoleLog,httpRequestToCurl } from '../tool/allTool.js';
+import {ApiOptions} from '../config/apiOptions.js'
+import {dealrespon, consoleLog,checkExpectation } from '../tool/allTool.js';
+import { expect } from "../tool/chaijs.js";
 /*
 option={
 	key	事项类型的key
@@ -25,13 +26,41 @@ export function delByParse(option) {
 	});
 	option.requestname = option.tablename
 	const res = request(option, 'POST', path, payload, request_params)
-	return res
+	if (!option.isNotLog){
+		res.report.steps = [
+			{"name": "返回状态200或者201",
+			"status": 	checkExpectation(() => expect([200,201]).to.be.an("array").that.includes(res.res.status)).pass || 'broken',
+			"parameters": [{'name': '实际结果', 'value': checkExpectation(() => expect([200,201]).to.be.an("array").that.includes(res.res.status)).fail || res.res.status}]
+			},
+			{
+			"name": "返回包含objectId",
+			"status": 	checkExpectation(() => expect(res.res.json()).to.have.property("objectId")).pass || 'broken',
+			"parameters": [{'name': '实际结果', 'value': checkExpectation(() => expect(res.res.json()).to.have.property("objectId")).fail || res.res.json().objectId}]
+			}
+		]
+		consoleLog(res.report)
+	}
+	return res.res
 }
 export function createByParse(option) {
 	const path = '/parse/classes/' + option.tablename;
 	option.requestname = option.tablename
 	const res = request(option, 'POST', path, option.payload, request_params)
-	return res
+	if (!option.isNotLog){
+		res.report.steps = [
+			{"name": "返回状态200或者201",
+			"status": 	checkExpectation(() => expect([200,201]).to.be.an("array").that.includes(res.res.status)).pass || 'broken',
+			"parameters": [{'name': '实际结果', 'value': checkExpectation(() => expect([200,201]).to.be.an("array").that.includes(res.res.status)).fail || res.res.status}]
+			},
+			{
+			"name": "返回包含objectId",
+			"status": 	checkExpectation(() => expect(res.res.json()).to.have.property("objectId")).pass || 'broken',
+			"parameters": [{'name': '实际结果', 'value': checkExpectation(() => expect(res.res.json()).to.have.property("objectId")).fail || res.res.json().objectId}]
+			}
+		]
+		consoleLog(res.report)
+	}
+	return res.res
 }
 //----------------华丽的分割线--------------
 //---------下面写用例，上面是接口参数封装-----------
@@ -47,19 +76,17 @@ params={
 空默认返回res.json()
 */
 export function apicreateItemType(params={}){
-	const option = JSON.parse(JSON.stringify(ApiOptions));
+	// const option = JSON.parse(JSON.stringify(ApiOptions));
 	const payload = JSON.stringify({
 		"name": params.name + ApiOptions.projectuuid,
 		"key": params.key + ApiOptions.projectuuid,
 		"icon": "/icons/Issue_Plan.svg",
-		"_ApplicationId": option.tenant,
-		"_SessionToken": option.token
+		"_ApplicationId": ApiOptions.tenant,
+		"_SessionToken": ApiOptions.token
 	});
-	option.tablename = 'ItemType'
-	option.payload = payload
-	option.group = params.group
-	option.casename = params.casename
-	let res = createByParse(option)
+	params.tablename = 'ItemType'
+	params.payload = payload
+	let res = createByParse(params)
 	try {
 		return dealrespon(res.json(), params.params)
 	  } catch (err) {
