@@ -3,6 +3,11 @@
 - 接口性能自动化
 - 前端性能自动化
 
+# 构建方式
+```
+go install go.k6.io/xk6/cmd/xk6@latest
+xk6 build --with github.com/Mistyrain520/xk6-zap@latest --with github.com/grafana/xk6-sql
+```
 
 ## k6 api自动化
 #### 编写底层api

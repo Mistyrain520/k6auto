@@ -13,9 +13,13 @@ export default function () {
   describe('Basic test', (t) => {
     // throw 'Something entirely unexpected happened';
     // expect([200,201].to.be.an("array").that.includes(201));
-    const response = http.get('https://test-api.k6.io/');
-    const a = {"ancestors":[],"objectId":"JGTgMKpxk1"}
-    expect(a).to.have.keys("objectId");
+    const myObject = { key1: '1'};
+
+    expect(myObject).to.deep.include({ key1: 1});
+    // expect(new Set(['a', 'b'])).to.have.all.keys('a', 'b');
+    // const response = http.get('https://test-api.k6.io/');
+    // const a = {"ancestors":[],"objectId":"JGTgMKpxk1"}
+    // expect(a).to.have.keys("objectId");
     // expect(response.body).to.have.all.keys('a', 'b');
    
 
@@ -30,7 +34,7 @@ export default function () {
     // expect({ a: 1, b: 2 }).to.not.have.any.keys("c", "d");
     // expect({ a: 1, b: 2 }).to.have.all.keys("a", "b");
     // expect("foo").to.be.a("string");
-    expect([200,201]).to.be.an("array").that.includes(201);
+    // expect([200,201]).to.be.an("array").that.includes(201);
     // expect("foobar").to.include("foo");
     // expect(1).to.equal(1);
     // expect(true).to.be.true;

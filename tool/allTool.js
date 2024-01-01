@@ -3,7 +3,10 @@ import crypto from 'k6/crypto';
 import {JSONPath} from '../node_modules/jsonpath-plus/dist/index-browser-esm.js';
 import {logJson} from '../config/apiOptions.js'
 import zaplogger from 'k6/x/zaplogger';
+import { SharedArray } from 'k6/data';
 import { expect } from "../tool/chaijs.js";
+
+
 let date = new Date();
 let year = date.getFullYear();
 let month = date.getMonth() + 1;
@@ -15,19 +18,13 @@ export function generateMd5(data) {
   return crypto.md5(data, 'hex');
 }
 
-
-
-
-export function jsonpath(obj, jsptah){
-  return JSONPath(jsptah, obj)
-}
 // returnBykey返回 {'key': value}
 // jsonpath 返回 []
 // 
 export function dealrespon(obj, params){
   if (params && obj){
     if (params.hasOwnProperty("jsonpath")){
-      return jsonPath(obj, jsptah)
+      return JSONPath(params['jsonpath'], obj)
     }
     if (params.hasOwnProperty("returnBykey")){
       return params.returnBykey.reduce(function(result, key) {
@@ -123,4 +120,16 @@ export function checkExpectation(expectationFunc) {
   } catch (error) {
       return {'fail': error.message};
   }
+}
+
+
+//SharedArray方式读取Json
+export function readJson(customName, filepath) {
+  const data = new SharedArray(customName, function () {
+    const f = JSON.parse(open(filepath));
+    
+    return f; // f must be an array
+  });
+  return data
+  
 }
