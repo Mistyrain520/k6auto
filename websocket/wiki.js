@@ -1,3 +1,5 @@
+//旧版ws，目前不用了，改用'k6/experimental/websockets'
+//该文件不可用了，仅作参考对比
 import { randomString, randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import ws from 'k6/ws';
 import { check, sleep } from 'k6';

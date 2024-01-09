@@ -2,6 +2,9 @@
 // import { sleep } from 'k6';
 // import sql from 'k6/x/sql';
 // import { getitemGroup } from './tool/pgsql.js';
+import encoding from 'k6/encoding';
+import { readJson} from './tool/allTool.js';
+const mindMessaage = readJson('mindMessaage2', './websocket/k6scen/mind2.json')
 export function setup() {
   const data = {}
   // const db = sql.open('postgres', 'postgres://gitee_team:fa29136a28579f30efe21829aef27bf89730070dbeb331729354d7995ac84a7b@127.0.0.1:5432/osc?sslmode=disable');
@@ -15,45 +18,69 @@ export default function (data) {
   // const db1 = sql.open('postgres', 'postgres://gitee_team:fa29136a28579f30efe21829aef27bf89730070dbeb331729354d7995ac84a7b@127.0.0.1:5432/osc?sslmode=disable');
   // console.log(data, "@@##")
   // console.log(getitemGroup(db1, 'OfqrtG8PqV'), "@@##")
+  let str1 = '\x11'; // 包含 \x11 的字符串
+  let str2 = 'zuhutest_6-101731'; // 另一个字符串
 
-  const a = "[\"message\",\"{\\\"type\\\":\\\"license\\\",\\\"license\\\":{\\\"ofdList\\\":[{\\\"authorizationCode\\\":\\\"3b9c09b3-dd29-55ea-93f8-d538ca0554f3\\\",\\\"ip\\\":\\\"\\\",\\\"ofdCode\\\":\\\"\\\"}],\\\"ofdIsChecked\\\":false,\\\"uuid\\\":\\\"3b9c09b3-dd29-55ea-93f8-d538ca0554f3\\\",\\\"OFDLicense\\\":null,\\\"ip\\\":null,\\\"isClusterMode\\\":true,\\\"uosAI\\\":false,\\\"bindMode\\\":1,\\\"exchangeFormat\\\":[\\\"bmp\\\",\\\"docx\\\",\\\"gif\\\",\\\"jpg\\\",\\\"odt\\\",\\\"pdf\\\",\\\"rtf\\\",\\\"png\\\",\\\"txt\\\",\\\"csv\\\",\\\"ods\\\",\\\"xlsx\\\",\\\"odp\\\",\\\"pptx\\\"],\\\"wordDeskRadio\\\":\\\"1\\\",\\\"wordDeskFileFormatList\\\":[\\\"doc\\\",\\\"docm\\\",\\\"docx\\\",\\\"dot\\\",\\\"dotm\\\",\\\"dotx\\\",\\\"epub\\\",\\\"fodt\\\",\\\"htm\\\",\\\"html\\\",\\\"mht\\\",\\\"odt\\\",\\\"ott\\\",\\\"pdf\\\",\\\"rtf\\\",\\\"txt\\\",\\\"xps\\\",\\\"wps\\\"],\\\"wordDeskAdvancedFunction\\\":[],\\\"wordMobileFileFormatList\\\":[\\\"doc\\\",\\\"docm\\\",\\\"docx\\\",\\\"dot\\\",\\\"dotm\\\",\\\"dotx\\\",\\\"epub\\\",\\\"fodt\\\",\\\"htm\\\",\\\"html\\\",\\\"mht\\\",\\\"odt\\\",\\\"ott\\\",\\\"pdf\\\",\\\"rtf\\\",\\\"txt\\\",\\\"xps\\\",\\\"wps\\\"],\\\"wordMobileRadio\\\":\\\"1\\\",\\\"excelDeskRadio\\\":\\\"1\\\",\\\"excelDeskFileFormatList\\\":[\\\"csv\\\",\\\"et\\\",\\\"crtx\\\",\\\"fods\\\",\\\"ods\\\",\\\"ost\\\",\\\"xls\\\",\\\"xlsm\\\",\\\"xlsx\\\",\\\"xlt\\\",\\\"xltm\\\",\\\"xltx\\\"],\\\"excelDeskAdvancedFunction\\\":[],\\\"pptDeskAdvancedFunction\\\":[],\\\"excelMobileRadio\\\":\\\"1\\\",\\\"excelMobileFileFormatList\\\":[\\\"csv\\\",\\\"et\\\",\\\"crtx\\\",\\\"fods\\\",\\\"ods\\\",\\\"ost\\\",\\\"xls\\\",\\\"xlsm\\\",\\\"xlsx\\\",\\\"xlt\\\",\\\"xltm\\\",\\\"xltx\\\"],\\\"pptDeskRadio\\\":\\\"1\\\",\\\"pptDeskFileFormatList\\\":[\\\"fodp\\\",\\\"dps\\\",\\\"odp\\\",\\\"otp\\\",\\\"pot\\\",\\\"potm\\\",\\\"potx\\\",\\\"pps\\\",\\\"ppsm\\\",\\\"ppsx\\\",\\\"ppt\\\",\\\"pptm\\\",\\\"pptx\\\"],\\\"pptMobileRadio\\\":\\\"1\\\",\\\"pptMobileFileFormatList\\\":[\\\"fodp\\\",\\\"dps\\\",\\\"odp\\\",\\\"otp\\\",\\\"pot\\\",\\\"potm\\\",\\\"potx\\\",\\\"pps\\\",\\\"ppsm\\\",\\\"ppsx\\\",\\\"ppt\\\",\\\"pptm\\\",\\\"pptx\\\"],\\\"process\\\":8,\\\"connections\\\":100,\\\"users_count\\\":0,\\\"nodes\\\":0,\\\"count\\\":8,\\\"commonAdvanceFunction\\\":[],\\\"end_date\\\":\\\"2024-03-26\\\",\\\"users_expire\\\":2,\\\"mode\\\":0,\\\"light\\\":false,\\\"version\\\":\\\"6.0.0\\\",\\\"coCharaCode\\\":\\\"\\\",\\\"coRegUserMax\\\":\\\"\\\",\\\"authorizationLevel\\\":800,\\\"cosysCode\\\":\\\"\\\",\\\"useOfficeExpand\\\":false,\\\"hideOfficeLog\\\":false,\\\"hideCooperationLog\\\":false,\\\"enableRedknowledge\\\":false,\\\"enableOfdFormat\\\":false,\\\"replaceCooperationLog\\\":false,\\\"endDataMsg\\\":null,\\\"isCheckedPublicCloud\\\":false,\\\"sequenceNo\\\":\\\"64e23ab15ca7f66da76798ad4908b5fd\\\",\\\"endDate\\\":\\\"2024-03-26T00:00:00.000Z\\\",\\\"type\\\":3,\\\"usersExpire\\\":172800,\\\"isMaster\\\":true,\\\"buildDate\\\":\\\"2023-10-31T16:00:00.000Z\\\",\\\"rights\\\":1,\\\"buildVersion\\\":\\\"6.4.81\\\",\\\"buildNumber\\\":0}}\"]"
-  // console.log(a.replace(/\\/g, ''))
-  console.log(JSON.parse(a))
-  const changxie = {
-    "type": "auth",
-    "docid": "zuhutest_6_4",
-    "documentCallbackUrl": "http://wiki-master:5199/open/office/101634/saveCXCallback?tenant=zuhutest_6&userId=103&type=&id=101634",
-    "token": "fghhfgsjdgfjs",
-    "user": {
-      "id": "103",
-      "username": "osc-admin",
-      "firstname": null,
-      "lastname": null,
-      "indexUser": -1
-    },
-    "editorType": 0,
-    "lastOtherSaveTime": -1,
-    "block": [],
-    "sessionId": null,
-    "sessionTimeConnect": null,
-    "sessionTimeIdle": 0,
-    "documentFormatSave": 65,
-    "view": false,
-    "isCloseCoAuthoring": false,
-    "openCmd": {
-      "c": "open",
-      "id": "zuhutest_6_101634",
-      "userid": "103",
-      "format": "docx",
-      "url": "http://gitee-minio:9000/gitee-wiki/zuhutest_6/page/1034/101634/467e061ec9d0491bb8da8d97133d2d31.docx",
-      "title": "Unnamed.docx",
-      "lcid": 30724,
-      "nobase64": true
-    },
-    "lang": "zh",
-    "mode": null,
-    "permissions": {}
+  let combinedStr = str1 + str2 + '\x00'+ '\x00' + '\x01';// 连接两个字符串
+
+
+  console.log(encoding.b64encode(combinedStr), "@@@")
+  var buff = encoding.b64decode('fVPZsqIwEP2aPM4UJCz6CAYUURQXEF+mULZ4FZBNuV8/QcBlpmaqurrSOadPOt0JEGUAIfGoA0hiARzRVVGnfrtBvUeCoAkeSO7nOUlizXvCMibRWbg6Mq7s0+IXKU9T8Ukvcz9740LEUftAY/fyOupS9+ED99zC7bBHlX0lfVy1gdCx3yH3qXmM3Dh8aR47gJdbYvaKIay5evcl7jdKObN8e+Z/r3e3Budxm0z+SH4rsPEjj7hh5l4AZB73QBjwTRpQRCCNGoMM7TADlCGgrZb5DoYM7X9PPiSDeFlb+6VZB6kdQnLlBx0PKQDSy6K7C5Dc6PTm7bGBcy1UtHUQxfmMbABUY7vakasZLFO9VqOZrjhFxg2NqZnpKwGONwiyFwePVWvJMseCJuhj6bSOVr6/1RZ3RR+xWLZlXr5fHNVhhakV5kP9S8HT2NTgtTpI/MGQ9m78PSknmsCLmiq4gpGWjmNU6yrau+akPFNZXrXMmGGCsxiFaLmlO+QehGF5xPeROHbzeRIBKBcndnuzhA05nJWSchaB6ATOTZjTNVLMS7Ur5uPNPadhYvzdBkQbpPbtb/rUjTvN/IokZf6aEjURNxNtfTvX/z/nn8xTr+j+ichwaMANB0hETKP08bb+/SlE/CSnWVIkx+T88YZ9jxRJ9iqWY/BKsrXFD0tZrbWFQTdamd8=', 'std')
+  let uint8View = new Uint8Array(buff); 
+  for(const element of uint8View){
+    console.log(String.fromCharCode(element), "@##")
   }
+  // console.log(uint8View.byteLength,uint8View[17])
+  // uint8View[17] = 48;
+  // console.log(uint8View.byteLength,uint8View[17])
+  // let encodedString = encoding.b64encode(uint8View);
+  // console.log(encodedString, "###")
+  
+  // for (const mess of mindMessaage){
+  //   if (mess.type == 'send'){
+  //     console.log(modifiArrBuff(mess.data, {'tenant': 'zuhutest_6', 'pageid': '101758'}))
+  //   }
+  // }
+  // console.log(modifiArrBuff('EXp1aHV0ZXN0XzYtMTAxNzY1AAI/AQKAvP6lAQIoAQZjb25maWcFdGhlbWUBdwpmcmVzaC1ibHVlKAEGY29uZmlnB3ZlcnNpb24BdwYxLjQuNDMA', {'tenant': 'zuhutest_6', 'pageid': '101764'}))
 }
-//如果想要db只open一遍，那边需要在setup中直接执行sql返回结果。不可以返回db然后给到场景使用
-//否则只能在场景中自行连接db。每个场景下每个VU都是独立的ES2015ES6的js环境，每个VU之间是不互通的。
+function modifiArrBuff(base64String, params={}){
+  //这个customlength = 18不是固定的，得看报文的租户信息来修改
+  const customlength = 18
+  var buff = encoding.b64decode(base64String, 'std')
+  let uint8View = new Uint8Array(buff); 
+  
+  let tenant = params.tenant;
+  let pageid = params.pageid;
+  let oldbuffLength = uint8View.length
+  let newLength = tenant.length + pageid.length + 1
+  let newUint8View1 = new Uint8Array(1);
+  newUint8View1[0] = uint8View[0]
+  let newUint8View2 = new Uint8Array(newLength);
+  for(let i = 0; i< newLength; i++){
+    if(i < tenant.length){
+      newUint8View2[i] = tenant[i].charCodeAt(0)
+    }
+    if(i == tenant.length){
+      newUint8View2[i] = '-'.charCodeAt(0)
+    }
+    if(i > tenant.length){
+      newUint8View2[i] = pageid[i-tenant.length-1].charCodeAt(0)
+    }
+  }
+  let newUint8View3 = new Uint8Array(oldbuffLength - customlength);
+  for(let i = 0; i< newUint8View3.length; i++){
+    newUint8View3[i] = uint8View[i + customlength]
+  }
+  let mergedArray = new Uint8Array(newUint8View1.length + newUint8View2.length + newUint8View3.length);
+  mergedArray.set(newUint8View1, 0);
+  mergedArray.set(newUint8View2, newUint8View1.length);
+  mergedArray.set(newUint8View3, newUint8View1.length + newUint8View2.length);
+  console.log('原来的', uint8View)
+  console.log('新的', mergedArray)
+  let uint16View = new Uint16Array(buff)
+  var buff1 = encoding.b64decode(encoding.b64encode(mergedArray), 'std')
+  let newuint16View = new Uint16Array(buff1)
+  console.log('原来的16', uint16View)
+  console.log('新的16', newuint16View)
+  return encoding.b64encode(mergedArray)
+}

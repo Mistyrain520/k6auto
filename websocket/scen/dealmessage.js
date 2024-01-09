@@ -5,8 +5,9 @@
 
 */
 const fs = require('fs');
-const messType = 'changxie'
-const yourfile = 'word2.json'
+//editor office diagram
+const messType = 'office'
+const yourfile = 'ppt.json'
 // 读取原始 JSON 文件
 fs.readFile('./websocket/scen/' + yourfile, 'utf8', (err, data) => {
   if (err) {
@@ -16,12 +17,26 @@ fs.readFile('./websocket/scen/' + yourfile, 'utf8', (err, data) => {
 
   try {
     const jsonData = JSON.parse(data); // 解析 JSON 数据
-    for (const element of jsonData.log.entries){
-        if (element.hasOwnProperty('_webSocketMessages')){
-          if (messType === 'changxie' && !element.request.url.includes('docId')){
-              continue
-          }
-          // console.log(element['_webSocketMessages'])
+    if(messType === 'editor' || messType === 'diagram'){
+      for (const element of jsonData.log.entries){
+        if (element.hasOwnProperty('_webSocketMessages') && element.request.url.includes(messType)){
+          const newNameObject = element['_webSocketMessages'];
+          const newJsonData = JSON.stringify(newNameObject, null, 2);
+          fs.writeFile('./websocket/k6scen/' + yourfile, newJsonData, 'utf8', (err) => {
+              if (err) {
+                console.error('Error writing file:', err);
+                return;
+              }
+              console.log('New JSON file created successfully!');
+              return
+            });
+        }
+      }
+    }
+    if(messType === 'mind'){
+      for (const element of jsonData.log.entries){
+        if (element.hasOwnProperty('_webSocketMessages') && element.request.url.includes('mind')){
+          console.log(element.request.url)
           const newNameObject = element['_webSocketMessages'];
           const newJsonData = JSON.stringify(newNameObject, null, 2);
           fs.writeFile('./websocket/k6scen/' + yourfile, newJsonData, 'utf8', (err) => {
@@ -31,8 +46,25 @@ fs.readFile('./websocket/scen/' + yourfile, 'utf8', (err, data) => {
               }
               console.log('New JSON file created successfully!');
             });
+      }}
+  
+    }
+    if(messType === 'office'){
+      for (const element of jsonData.log.entries){
+        if (element.hasOwnProperty('_webSocketMessages') && element.request.url.includes('docId')){
+          console.log(element.request.url)
+          const newNameObject = element['_webSocketMessages'];
+          const newJsonData = JSON.stringify(newNameObject, null, 2);
+          fs.writeFile('./websocket/k6scen/' + yourfile, newJsonData, 'utf8', (err) => {
+              if (err) {
+                console.error('Error writing file:', err);
+                return;
+              }
+              console.log('New JSON file created successfully!');
+            });
+        }
       }
-
+      
     }
 
   } catch (parseError) {
