@@ -12,8 +12,7 @@ const spaceId = 1034,
     pptMessage = readJson('pptMessage', '../k6scen/ppt.json'),
     excelMessage = readJson('excelMessage', '../k6scen/excel.json'),
     mindMessaage = readJson('mindMessaage', '../k6scen/mind2.json'),
-    diagramMessage = readJson('diagramMessage', '../k6scen/diagram.json'),
-    mulitMessage = readJson('mulitMessage', '../k6scen/pageUsers.json')
+    diagramMessage = readJson('diagramMessage', '../k6scen/diagram.json')
 
 //写page场景
 export function writePage(params){
