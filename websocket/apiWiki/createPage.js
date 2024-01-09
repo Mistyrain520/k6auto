@@ -3,7 +3,6 @@ import { WebSocket } from 'k6/experimental/websockets';
 import encoding from 'k6/encoding';
 
 import { sleep, check } from 'k6';
-import {} from './page.js'
 import { setTimeout, clearTimeout, setInterval, clearInterval } from 'k6/experimental/timers';
 
 
@@ -50,7 +49,7 @@ export function replayMessage(url, messages, params={}) {
       headers: {
 
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Cookie': 'lang=zh-CN; USER_REALM_KEY="eyJyZWFsbVV1aWQiOiJvc2MiLCJjbGllbnRJZCI6Im9uZS1zc28iLCJyZWRpcmVjdFVyaSI6bnVsbH0="; PRE-GW-LOAD=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJ1U05DcmVhdGVkIjoiMSIsImRpc3BsYXlOYW1lIjoi6LaF566hIiwic0FNQWNjb3VudE5hbWUiOiJvc2MtYWRtaW4iLCJjb21wYW55IjoienVodXRlc3RfNiIsImNvbXBhbnlJZGVudGl0eSI6IkNPTVBBTllfT1dORVIiLCJ1c2VyUHJpbmNpcGFsTmFtZSI6Im9zY0BhZG1pbi5jb20iLCJqdGkiOiJhNTE1YjczM2U2ZGM0NmRhOTFmNWQ2ZWFiZDU5MmIzMCIsImlhdCI6MTcwNDA4NTgyNywic3ViIjoiMSIsImV4cCI6MTcwNDY2MTIwMH0.6aSfJfCwHxBQ3R90hkgj1BXpp9L1D0nmOERswubffiM; PRE-GW-SESSION=a515b733e6dc46da91f5d6eabd592b30',
+        'Cookie': params.Cookie,
       },
     };
   const ws = new WebSocket(url, null, params1);
@@ -60,17 +59,14 @@ export function replayMessage(url, messages, params={}) {
     if (!check(ws, {
       'is status 200': (r) => r.readyState == 1,
     })){
+      console.log('链接失败!!!', url)
       ws.close()
     }
-    // 测试发送用的，写入1
-    // ws.send(encoding.b64decode('AgAIbm8gdG9rZW4=', 'std'))
-    // ws.send(encoding.b64decode('AAABAA==', 'std'));
-    // ws.send(encoding.b64decode('BUx7Im1lc3NhZ2UiOnsiZGF0YSI6eyJrZXkiOiJ0aXRsZSIsImRhdGEiOiIxIn0sImFjdGlvbiI6InVwZGF0ZS1wYWdlLWZpZWxkIn19', 'std'));
     for (const mess of messages){
       switch(mess.opcode){
         case 1:
           if (mess.type == 'send'){
-            if(params && mess.data.includes('gitee-minio')){
+            if(params.type == 'office' && mess.data.includes('gitee-minio')){
               changxie['docid'] = params.tenant + '_' + params.pageid
               changxie['documentCallbackUrl'] = 'http://wiki-master:5199/open/office/'+ params.pageid+'/saveCXCallback?tenant='+ params.tenant+'&userId=103&type=&id=' + params.pageid
               changxie['openCmd']['id'] = params.tenant + '_' + params.pageid
@@ -80,7 +76,8 @@ export function replayMessage(url, messages, params={}) {
               console.log("case 1 发送@#@", sendDtat)
               ws.send(sendDtat)
               sleep(0.01)
-            }else{
+            }
+            else{
               // console.log("case 1 发送", mess.data)
               ws.send(mess.data)
               sleep(0.01)
@@ -89,10 +86,16 @@ export function replayMessage(url, messages, params={}) {
           break;
         case 2:
           if (mess.type == 'send'){
-            console.log("case 2 发送", mess.data)
-            let arrbuff = encoding.b64decode(mess.data, 'std')
-            ws.send(arrbuff)
-            sleep(0.01)
+            if(params.type == 'mind'){
+              let senddatat = modifiArrBuff(mess.data, params)
+              console.log("case 2-1 发送", encoding.b64encode(senddatat))
+              ws.send(senddatat)
+            }else{
+              console.log("case 2-2 发送", mess.data)
+              let arrbuff = encoding.b64decode(mess.data, 'std')
+              ws.send(arrbuff)
+            }
+            sleep(0.01)      
           }
           break;
         default:
@@ -121,4 +124,38 @@ export function replayMessage(url, messages, params={}) {
 
     ws.close()
   });
+}
+function modifiArrBuff(base64String, params={}){
+  console.log(params, "#$#$")
+  //这个customlength = 18不是固定的，得看报文的租户信息来修改
+  const customlength = 18
+  var buff = encoding.b64decode(base64String, 'std')
+  let uint8View = new Uint8Array(buff); 
+  let tenant = params.tenant;
+  let pageid = params.pageid;
+  let oldbuffLength = uint8View.length
+  let newLength = tenant.length + pageid.length + 1
+  let newUint8View1 = new Uint8Array(1);
+  newUint8View1[0] = uint8View[0]
+  let newUint8View2 = new Uint8Array(newLength);
+  for(let i = 0; i< newLength; i++){
+    if(i < tenant.length){
+      newUint8View2[i] = tenant[i].charCodeAt(0)
+    }
+    if(i == tenant.length){
+      newUint8View2[i] = '-'.charCodeAt(0)
+    }
+    if(i > tenant.length){
+      newUint8View2[i] = pageid[i-tenant.length-1].charCodeAt(0)
+    }
+  }
+  let newUint8View3 = new Uint8Array(oldbuffLength - customlength);
+  for(let i = 0; i< newUint8View3.length; i++){
+    newUint8View3[i] = uint8View[i + customlength]
+  }
+  let mergedArray = new Uint8Array(newUint8View1.length + newUint8View2.length + newUint8View3.length);
+  mergedArray.set(newUint8View1, 0);
+  mergedArray.set(newUint8View2, newUint8View1.length);
+  mergedArray.set(newUint8View3, newUint8View1.length + newUint8View2.length);
+  return mergedArray.buffer
 }
