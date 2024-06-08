@@ -1,15 +1,15 @@
-import { randomString, randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
-import { WebSocket } from 'k6/experimental/websockets';
+// import { randomString, randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
+import { WebSocket,Params } from 'k6/experimental/websockets';
 import encoding from 'k6/encoding';
-
+import {WikiOptions} from '../config.js'
 import { sleep, check } from 'k6';
-import { setTimeout, clearTimeout, setInterval, clearInterval } from 'k6/experimental/timers';
+// import { setTimeout, clearTimeout, setInterval, clearInterval } from 'k6/experimental/timers';
 
 
 var changxie = {
 	"type": "auth",
-	"docid": "zuhutest_6_101633",
-	"documentCallbackUrl": "http://wiki-master:5199/open/office/101633/saveCXCallback?tenant=zuhutest_6&userId=103&type=&id=101633",
+	"docid": "zuhutest_6_102684",
+	"documentCallbackUrl": "http://wiki-master:5199/open/office/102684/saveCXCallback?tenant=zuhutest_6&userId=103&type=&id=102684",
 	"token": "fghhfgsjdgfjs",
 	"user": {
 		"id": "103",
@@ -18,22 +18,22 @@ var changxie = {
 		"lastname": null,
 		"indexUser": -1
 	},
-	"editorType": 0,
+	"editorType": 2,
 	"lastOtherSaveTime": -1,
 	"block": [],
 	"sessionId": null,
 	"sessionTimeConnect": null,
 	"sessionTimeIdle": 0,
-	"documentFormatSave": 65,
+	"documentFormatSave": 129,
 	"view": false,
 	"isCloseCoAuthoring": false,
 	"openCmd": {
 		"c": "open",
-		"id": "zuhutest_6_101633",
+		"id": "zuhutest_6_102684",
 		"userid": "103",
-		"format": "docx",
-		"url": "http://gitee-minio:9000/gitee-wiki/zuhutest_6/page/1034/101633/dfd55f2127fa4de39c35f3b8af71cc00.docx",
-		"title": "Unnamed.docx",
+		"format": "pptx",
+		"url": "http://wiki-master:5199/open/office/system/sample.pptx?tenant=zuhutest_6",
+		"title": "Unnamed.pptx",
 		"lcid": 30724,
 		"nobase64": true
 	},
@@ -53,24 +53,28 @@ export function replayMessage(url, messages, params={}) {
       },
     };
   const ws = new WebSocket(url, null, params1);
-
+    
   ws.addEventListener('open', () => {
     //这里要用==1来比较，因为readyState的类型是ReadyState，要用非严格比较
     if (!check(ws, {
-      'is status 200': (r) => r.readyState == 1,
+      'ws链接状态': (r) => r.readyState == 1,
     })){
       console.log('链接失败!!!', url)
       ws.close()
     }
+    let arrbuff = encoding.b64decode('AgAIbm8gdG9rZW4=', 'std')
+    ws.send(arrbuff);
+    console.log('链接成功了')
     for (const mess of messages){
+      // sleep(0.5)
       switch(mess.opcode){
         case 1:
           if (mess.type == 'send'){
-            if(params.type == 'office' && mess.data.includes('gitee-minio')){
+            // console.log("case 1")
+            if(params.type == 'office' && mess.data.includes('http://wiki-master:5199/open/office')){
               changxie['docid'] = params.tenant + '_' + params.pageid
               changxie['documentCallbackUrl'] = 'http://wiki-master:5199/open/office/'+ params.pageid+'/saveCXCallback?tenant='+ params.tenant+'&userId=103&type=&id=' + params.pageid
               changxie['openCmd']['id'] = params.tenant + '_' + params.pageid
-              changxie['openCmd']['url'] = 'http://gitee-minio:9000/gitee-wiki/' + params.fetchUrl
               //靠，注意观察畅写的报文格式，是['message', '报文内容']，是个数组，别TM搞错了，排查半天。
               var sendDtat = '42' + JSON.stringify(['message', JSON.stringify(changxie)])
               console.log("case 1 发送@#@", sendDtat)
@@ -78,7 +82,7 @@ export function replayMessage(url, messages, params={}) {
               sleep(0.01)
             }
             else{
-              // console.log("case 1 发送", mess.data)
+              console.log(mess.data)
               ws.send(mess.data)
               sleep(0.01)
             }
@@ -91,9 +95,18 @@ export function replayMessage(url, messages, params={}) {
               console.log("case 2-1 发送", encoding.b64encode(senddatat))
               ws.send(senddatat)
             }else{
+              let strdata = encoding.b64decode(mess.data, 'std', 's')
+              if (strdata.includes('pageId')){
+                let senddatat = customModifiArrBuff(mess.data, WikiOptions.oldpageId, params.pageid)
+                console.log("case 2-2 篡改报文发送", encoding.b64encode(senddatat))
+                ws.send(senddatat)
+                break
+              }
               console.log("case 2-2 发送", mess.data)
               let arrbuff = encoding.b64decode(mess.data, 'std')
               ws.send(arrbuff)
+              
+              
             }
             sleep(0.01)      
           }
@@ -111,20 +124,23 @@ export function replayMessage(url, messages, params={}) {
     }
     
     // listen for messages/errors and log them into console
-    ws.addEventListener('message', (e) => {
-        console.log(e, "###")
+    ws.addEventListener('message', (event) => {
+      console.log('收到消息啦了')
+      if (typeof event.data === 'string') {
+        console.log('Received text message:', event.data);
+    } else if (event.data instanceof ArrayBuffer) {
+        const buffer = new Uint8Array(event.data);
+        console.log('Received binary message:', buffer);
+    }
     });
-    // const intervalId = setInterval(() => {
-    //     ws.send(encoding.b64decode('AAABAA==', 'std'));
-    //   }, randomIntBetween(2000, 8000));
-
     ws.addEventListener('close', () => {
       console.log(`VU ${__VU} disconnected`);
     });
-
+    //注释，即可不停打印收到的message.k6并未能很好支持Js promise await异步。因此总是先执行发送之后再接受消息，暂时无法实时接受。实时接受需要开两个k6实例。
     ws.close()
   });
 }
+//即将废弃该方法
 function modifiArrBuff(base64String, params={}){
   console.log(params, "#$#$")
   //这个customlength = 18不是固定的，得看报文的租户信息来修改
@@ -134,6 +150,7 @@ function modifiArrBuff(base64String, params={}){
   let tenant = params.tenant;
   let pageid = params.pageid;
   let oldbuffLength = uint8View.length
+  //因为那个特殊租户带有_所以+1
   let newLength = tenant.length + pageid.length + 1
   let newUint8View1 = new Uint8Array(1);
   newUint8View1[0] = uint8View[0]
@@ -158,4 +175,130 @@ function modifiArrBuff(base64String, params={}){
   mergedArray.set(newUint8View2, newUint8View1.length);
   mergedArray.set(newUint8View3, newUint8View1.length + newUint8View2.length);
   return mergedArray.buffer
+}
+
+// 将字符串转换为 Uint8Array
+function stringToUint8Array(str) {
+  let arr = new Uint8Array(str.length);
+  for (let i = 0; i < str.length; i++) {
+      arr[i] = str.charCodeAt(i);
+  }
+  return arr;
+}
+// 替换字节序列
+function replaceSequence(array, targetSequence, replacementSequence) {
+  const strArray = array.join(',');
+  const strTarget = targetSequence.join(',');
+  const strReplacement = replacementSequence.join(',');
+
+  if (strArray.includes(strTarget)) {
+      const strNewArray = strArray.replace(strTarget, strReplacement);
+      return new Uint8Array(strNewArray.split(',').map(Number)).buffer;
+  } else {
+      return array.buffer;
+  }
+}
+function customModifiArrBuff(base64String, oldstring, newstringdata){
+  // 原始 Uint8Array
+  var oldbuff = encoding.b64decode(base64String, 'std')
+  let originalArray = new Uint8Array(oldbuff);
+
+  // 要查找的字节序列
+  let targetSequence = stringToUint8Array(oldstring);
+
+  // 替换的字节序列
+  let replacementSequence = stringToUint8Array(newstringdata);;
+
+  // 执行替换
+  let newArray = replaceSequence(originalArray, targetSequence, replacementSequence);
+  return newArray
+
+}
+
+//失败，不可行。还是go原生写比较好
+export function multiplayerMessage(url, messages, params={}){
+  const params1 = {
+    headers: {
+
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Cookie': params[0].Cookie,
+    },
+  };
+  const params2 = {
+    headers: {
+
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Cookie': params[1].Cookie,
+    },
+  };
+  const ws = new WebSocket(url, null, params1);
+  const ws2 = new WebSocket(url, null, params2);
+  const pp = new Params({
+
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Cookie': params[0].Cookie,
+  })
+  ws.establishConnection(pp)
+  console.log(ws.readyState, "##############")
+  for (const mess of messages){
+    console.log(mess.Cookie, mess.type != 'send')
+    // sleep(0.5)
+    if (mess.type != 'send'){
+      continue
+    }
+    if (mess.Cookie === "pageUser2"){
+      console.log("@@@@@@@@@@@@@@@@@@@")
+      ws2.addEventListener('open', () => {
+        if (!check(ws2, {
+          'ws链接状态': (r) => r.readyState == 1,
+        })){
+          console.log('链接失败!!!', url)
+          ws.close()
+        }
+        let arrbuff = encoding.b64decode(mess.data, 'std')
+        console.log('pageUser2  send  --:', mess.data)
+        ws2.send(arrbuff)
+      });
+    }else{
+      ws.addEventListener('open', () => {
+        if (!check(ws, {
+          'ws链接状态': (r) => r.readyState == 1,
+        })){
+          console.log('链接失败!!!', url)
+          ws.close()
+        }
+        let arrbuff = encoding.b64decode(mess.data, 'std')
+        console.log('pageUser1  send  --:', mess.data)
+        ws.send(arrbuff)
+      });
+    }
+    // switch(mess.Cookie){
+    //   case "pageUser2":
+    //     ws2.addEventListener('open', () => {
+    //       if (!check(ws2, {
+    //         'ws链接状态': (r) => r.readyState == 1,
+    //       })){
+    //         console.log('链接失败!!!', url)
+    //         ws.close()
+    //       }
+    //       let arrbuff = encoding.b64decode(mess.data, 'std')
+    //       console.log('pageUser2  send  --:', mess.data)
+    //       ws2.send(arrbuff)
+    //     });
+    //   default:
+    //     ws.addEventListener('open', () => {
+    //       if (!check(ws, {
+    //         'ws链接状态': (r) => r.readyState == 1,
+    //       })){
+    //         console.log('链接失败!!!', url)
+    //         ws.close()
+    //       }
+    //       let arrbuff = encoding.b64decode(mess.data, 'std')
+    //       console.log('pageUser1  send  --:', mess.data)
+    //       ws.send(arrbuff)
+    //     });
+    // }
+  }
+  ws.close()
+  ws2.close()
 }
