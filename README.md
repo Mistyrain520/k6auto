@@ -2,6 +2,11 @@
 - 接口自动化
 - 接口性能自动化
 - 前端性能自动化
+- 中间件性能
+- k8s混沌演练
+
+目前调研不好做的
+- UI自动化
 
 # 构建方式
 ```
@@ -55,14 +60,13 @@ scenarios: {
 ## TUDO
 - [x] k6 ~~丰富实战项目的api自动化测试，api性能自动化(已经做好样例，后续等扩展完善再考虑增加)~~
 - [x] k6 browser 实战(主体完成，持续优化中)
-- [x] k6 chaijs接入
-- [x] k6 zap-logger接入（自己开发的k6高性能日志库接入）
-- [x] go zap扩展开发
+- [x] k6 ~~chaijs接入~~
+- [x] k6 ~~zap-logger接入（自己开发的k6高性能日志库接入）~~
+- [x] ~~go zap扩展开发~~
 - [ ] k6 redis demo
-- [x] k6 pgql 接入
-- [x] k6 websocket demo(主体完成，持续优化中)
-- [x] k6 websocket 实战(单人协同文档自动化，压测，包括word ppt excel page)
-- [ ] k6 websocket 在协同文档中尝试双人协同自动化
+- [x] ~~k6 pgql 接入~~
+- [x] ~~k6 websocket demo~~
+- [x] ~~k6 websocket 实战(单人协同文档自动化，压测，包括word ppt excel page)~~
 - [ ] k6 kafka demo
 - [ ] k6 k8s demo
 - [ ] k6 grpc demo
