@@ -11,6 +11,8 @@ let date = new Date();
 let year = date.getFullYear();
 let month = date.getMonth() + 1;
 let day = date.getDate();
+let mypath = generateFile()
+let mylogger = zaplogger.initLogger('./' + mypath.formattedDate + '/' + mypath.myfilename)
 export function generateUUID(){
     return uuid.v4()
 }
@@ -42,8 +44,6 @@ export function dealrespon(obj, params){
 //TUDO:用go的zap重新写个扩展，支持高性能写入,这样就不需要consoleLog了
 export function consoleLog(params={}){
   if(!params){return}
-  let mypath = generateFile()
-	let mylogger = zaplogger.initLogger('./' + mypath.formattedDate + '/' + mypath.myfilename)
   // // 用深拷贝，创建独立副本
   // let Itemlog = JSON.parse(JSON.stringify(logJson));
   let statusDetails = zaplogger.zapObject('statusDetails', 'message', params.message,'trace', params.trace)

@@ -21,10 +21,8 @@ xk6 build --with github.com/Mistyrain520/xk6-zap@latest --with github.com/grafan
 暂未补充
 #### 生成allure报告
 ```
-//执行测试，先删除旧的report.log
-.\k6.exe run --console-output 'report.log' .\main.js
-//生成日志，这一步未来会替换为扩展就可以不需要执行了
-node ./logger/logger.js
+//执行测试，会自动生成日志文件夹，如2023-10-21
+.\k6.exe run  .\main.js
 //查看报告，先删除原来整个2023-10-21文件夹
 allure serve .\2023-10-21\  
 ```
