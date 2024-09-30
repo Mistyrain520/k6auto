@@ -7,7 +7,8 @@
 const fs = require('fs');
 //editor office diagram
 const messType = 'office'
-const yourfile = 'ppt.json'
+const yourfile = 'word2.json'
+console.log('start:');
 // 读取原始 JSON 文件
 fs.readFile('./websocket/scen/' + yourfile, 'utf8', (err, data) => {
   if (err) {

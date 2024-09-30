@@ -2,37 +2,49 @@ import {writePage, writeWord, writePpt, writeExcel, writeMind, writeDiagram, mul
 import {login} from './apiWiki/page.js'
 
 export function setup() {
-  return {'Cookie': login({
+  return [{'Cookie': login({
     "username": "osc-admin",
     "password": "k7YvIXzPfFsJjXWX0yc0PQ=="
-  })}
+  })}, {'Cookie': login({
+    "username": "nihao1",
+    "password": "k7YvIXzPfFsJjXWX0yc0PQ=="
+  })},{'Cookie': login({
+    "username": "nihao2",
+    "password": "k7YvIXzPfFsJjXWX0yc0PQ=="
+  })},{'Cookie': login({
+    "username": "nihao3",
+    "password": "k7YvIXzPfFsJjXWX0yc0PQ=="
+  })},{'Cookie': login({
+    "username": "nihao4",
+    "password": "k7YvIXzPfFsJjXWX0yc0PQ=="
+  })},]
 }
 export function teardown() {
   // teardowndata(data)
 }
 
-export const options234 = {
-  setupTimeout: '2m',
+export const options = {
+  setupTimeout: '20m',
   discardResponseBodies: false,
   scenarios: {
     contacts: {
         executor: 'per-vu-iterations',
-        vus: 1,
+        vus: 5,
         iterations: 1,
         maxDuration: '10m',
-        exec: 'scenarios_test',
+        exec: 'scenarios_wikiPage',
         tags: { my_custom_tag: '编写wiki文档' },
         env: { MYVAR: 'test' },
       },}
 }
-export const options = {
+export const options222 = {
   setupTimeout: '2m',
   discardResponseBodies: false,
   scenarios: {
     contacts: {
         executor: 'per-vu-iterations',
-        vus: 1,
-        iterations: 1,
+        vus: 2,
+        iterations: 6,
         maxDuration: '10m',
         exec: 'scenarios_wikiPage',
         tags: { my_custom_tag: '编写wiki文档' },
@@ -91,16 +103,16 @@ export const options = {
   },
 };
 export function scenarios_wikiPage(data) {
-  writePage(data)
+  writePage(data[`${__VU}`-1])
 }
 export function scenarios_wikiWord(data) {
-  writeWord(data)
+  writeWord(data[`${__VU}`-1])
 }
 export function scenarios_wikiPpt(data) {
-  writePpt(data)
+  // writePpt(data)
 }
 export function scenarios_wikiExcel(data) {
-  writeExcel(data)
+  // writeExcel(data)
 }
 export function scenarios_wikiMind(data) {
   // writeMind(data)
@@ -108,14 +120,8 @@ export function scenarios_wikiMind(data) {
 export function scenarios_wikiDiagram(data) {
   // writeDiagram(data)
 }
-export function scenarios_test(data) {
- const users = [{'Cookie': login({
-    "username": "osc-admin",
-    "password": "k7YvIXzPfFsJjXWX0yc0PQ=="
-  })},
-  {'Cookie': login({
-    "username": "chenruitao",
-    "password": "k7YvIXzPfFsJjXWX0yc0PQ=="
-  })}]
-  multiwritePage(users)
-}
+// export function testhaha(data) {
+//   const a = ['a', 'b']
+//   console.log(`VU ${__VU}: disconnected`);
+//   console.log(a[`${__VU}`-1])
+// }
