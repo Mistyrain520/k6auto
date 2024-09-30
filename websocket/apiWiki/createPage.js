@@ -52,6 +52,8 @@ export function replayMessage(url, messages, params={}) {
         'Cookie': params.Cookie,
       },
     };
+  
+  // TUDO:加入重试链接
   const ws = new WebSocket(url, null, params1);
     
   ws.addEventListener('open', () => {
@@ -62,11 +64,9 @@ export function replayMessage(url, messages, params={}) {
       console.log('链接失败!!!', url)
       ws.close()
     }
-    let arrbuff = encoding.b64decode('AgAIbm8gdG9rZW4=', 'std')
-    ws.send(arrbuff);
     console.log('链接成功了')
     for (const mess of messages){
-      // sleep(0.5)
+      sleep(0.1)
       switch(mess.opcode){
         case 1:
           if (mess.type == 'send'){
@@ -75,6 +75,10 @@ export function replayMessage(url, messages, params={}) {
               changxie['docid'] = params.tenant + '_' + params.pageid
               changxie['documentCallbackUrl'] = 'http://wiki-master:5199/open/office/'+ params.pageid+'/saveCXCallback?tenant='+ params.tenant+'&userId=103&type=&id=' + params.pageid
               changxie['openCmd']['id'] = params.tenant + '_' + params.pageid
+              changxie['openCmd']['format'] = params.pagetype
+              changxie['editorType'] = params.pagetype==='docx'?0:(params.pagetype==='pptx'?2:1)
+              changxie['openCmd']['title'] = "Unnamed." + params.pagetype
+              changxie['openCmd']['url'] = "http://gitee-minio:9000/wiki-static/" + params.fetchUrl
               //靠，注意观察畅写的报文格式，是['message', '报文内容']，是个数组，别TM搞错了，排查半天。
               var sendDtat = '42' + JSON.stringify(['message', JSON.stringify(changxie)])
               console.log("case 1 发送@#@", sendDtat)

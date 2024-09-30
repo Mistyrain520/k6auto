@@ -79,7 +79,7 @@ export function apicreateWordPage(params={}){
         "locale": "en",
         "isPrivate": false,
         "isPublished": false,
-        "spaceId": params.spaceId,
+        "spaceId": parseInt(params.spaceId, 10),
         "publishEndDate": "",
         "publishStartDate": "",
         "scriptCss": "",
