@@ -38,7 +38,7 @@ export default async function () {
 
     console.log('####',context.cookies())
     // 打开需要登录的页面
-    await page.goto('https://xxxxxx/auth/realms/osc/protocol/openid-connect/auth?response_type=code&client_id=one-sso&redirect_uri=https://osc.gitee.work/api/one/rest/v1/users/login/info/ret');
+    await page.goto('xxxxxxx');
     
     page.screenshot({ path: 'screenshot.png' });
 
