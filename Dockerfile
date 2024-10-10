@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine3.20
+FROM golang:1.23-alpine3.20 AS builder
 
 # 设置工作目录
 WORKDIR /xk6
@@ -18,6 +18,9 @@ RUN ls -l xk6
 
 # 执行 xk6 构建命令
 RUN ./xk6 build --with github.com/Mistyrain520/xk6-zap@latest --with github.com/grafana/xk6-sql
+
+# 第二阶段：最终镜像
+FROM golang:1.23-alpine3.20
 
 # 设置工作目录
 WORKDIR /xk6
